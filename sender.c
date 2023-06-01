@@ -1,11 +1,12 @@
+#include "/home/beams/MJAMIL/project/libzmq/include/zmq.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-#include "/home/jamilm/libzmq/include/zmq.h"
 #include <assert.h>
+#include <string.h>
 
 #define CHUNK_SIZE 1048576 // 1 MB
-#define FILE_PATH "/home/jamilm/transferService/files_to_send/FILE0"
+#define FILE_PATH "/home/beams/MJAMIL/transferService/files_to_send/FILE0"
 
 typedef struct {
     void *socket;
@@ -141,7 +142,7 @@ int main(int argc, char *argv[]) {
         long end = (i == num_threads - 1) ? file_size : (file_size / num_threads) * (i + 1);
 
         // create ZeroMQ socket
-        void* socket = zmq_socket(context, ZMQ_PUSH);
+        void* socket = zmq_socket(context, ZMQ_PUB);
         zmq_connect(socket, endpoint);
 
         // create task data
@@ -158,9 +159,13 @@ int main(int argc, char *argv[]) {
         pthread_join(threads[i], NULL);
     }
     // send end message
+
     void* socket = zmq_socket(context, ZMQ_PUSH);
     zmq_connect(socket, endpoint);
-    zmq_send(socket, "end", 3, 0); // "end" string and null terminator
+    char end_msg[CHUNK_SIZE] = "end";
+    memset(end_msg + 3, 0, CHUNK_SIZE - 3); // fill the rest of the message with zeroes
+    zmq_send(socket, end_msg, CHUNK_SIZE, 0);
+    printf("Sent end message\n");
 
     // clean up
     free(threads);
@@ -170,4 +175,5 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+
 
