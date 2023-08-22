@@ -1,4 +1,30 @@
 #include "thread.h"
+extern int current_concurrency;
+extern pthread_mutex_t concurrency_mutex;
+
+void set_concurrent_value(ConcurrencyWorkerData* data, int value) {
+    pthread_mutex_lock(&concurrency_mutex);
+    current_concurrency = value;
+    pthread_mutex_unlock(&concurrency_mutex);
+}
+
+int get_concurrent_value(ConcurrencyWorkerData* data) {
+    pthread_mutex_lock(&data->global_concurrency_value_mutex);
+    int value = data->global_concurrency_value;
+    pthread_mutex_unlock(&data->global_concurrency_value_mutex);
+    return value;
+}
+
+void adjust_concurrency_workers(ConcurrencyWorkerData* data) {
+    int current_value = get_concurrent_value(data);
+
+    if (data->id >= current_value) {
+        pause_concurrency_worker(data);
+    } else {
+        resume_concurrency_worker(data);
+    }
+}
+
 
 
 void pause_concurrency_worker(ConcurrencyWorkerData* data) {
@@ -42,19 +68,23 @@ void* ConcurrencyThreadFunc(void* arg) {
     printf("Concurrent Thread %d creating all parallel threads (paused)\n", data->id);
 
     while(data->active) {
-        pthread_mutex_lock(&data->pause_mutex);
-        while(data->paused) {
-            pthread_cond_wait(&data->pause_cond, &data->pause_mutex);
+        pthread_mutex_lock(&concurrency_mutex);
+        if (data->id >= current_concurrency) {
+            pthread_mutex_unlock(&concurrency_mutex);
+            pause_concurrency_worker(data);
+            sleep(UPDATE_TIME);
+            continue;
+        } else {
+            pthread_mutex_unlock(&concurrency_mutex);
+            resume_concurrency_worker(data);
         }
-        pthread_mutex_unlock(&data->pause_mutex);
-
         active_parallel_value = get_parallel_value(data);
 
         if (active_parallel_value != old_active_parallel_value) {
             adjust_parallel_workers(thread_data, active_parallel_value);
             old_active_parallel_value = active_parallel_value;
         }
-
+        // adjust_concurrency_workers(data);  // Adjust concurrency based on global value
         sleep(UPDATE_TIME);
     }
 
