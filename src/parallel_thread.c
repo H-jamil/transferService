@@ -38,18 +38,19 @@ void resume_parallel_worker(ParallelWorkerData* data) {
 
 void* ParallelThreadFunc(void* arg) {
     ParallelWorkerData* data = (ParallelWorkerData*) arg;
-
+    // Following condition is required for thread to be active. If data->active = 0
+    // the thread will shut itself down
     while(data->active) {
         pthread_mutex_lock(&data->pause_mutex);
+        // Parallel Thread is Paused below if data->paused is true
         while(data->paused) {
             pthread_cond_wait(&data->pause_cond, &data->pause_mutex);
         }
         pthread_mutex_unlock(&data->pause_mutex);
-
+        // Parallel Thread runs below if data->paused is false
         time_t now;
         time(&now);
         printf("Parent ID : %d thread ID: %d, Time: %s", data->parent_id, data->id, ctime(&now));
-
         sleep(1);
     }
 

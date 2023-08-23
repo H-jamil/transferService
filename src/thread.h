@@ -29,8 +29,6 @@ typedef struct ConcurrencyWorkerData{
     int parallel_value;
     pthread_mutex_t parallel_value_mutex;
     ParallelWorkerData* thread_data;
-    int global_concurrency_value;
-    pthread_mutex_t global_concurrency_value_mutex;
 } ConcurrencyWorkerData;
 
 void adjust_parallel_workers(ParallelWorkerData* thread_data, int active_parallel_value);
@@ -40,9 +38,8 @@ void pause_parallel_worker(ParallelWorkerData* data);
 void resume_parallel_worker(ParallelWorkerData* data);
 void* ParallelThreadFunc(void* arg);
 
-void set_concurrent_value(ConcurrencyWorkerData* data, int value);
-int get_concurrent_value(ConcurrencyWorkerData* data);
-void adjust_concurrency_workers(ConcurrencyWorkerData* data);
+void set_concurrent_value(int value);
+int get_concurrent_value();
 void pause_concurrency_worker(ConcurrencyWorkerData* data);
 void resume_concurrency_worker(ConcurrencyWorkerData* data);
 void* ConcurrencyThreadFunc(void* arg);
