@@ -5,6 +5,9 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <time.h>
+#include <curl/curl.h>
+#include "/home/hjamil/libzmq/include/zmq.h"
+#include "data_generator.h"
 
 
 #define MAX_CONCURRENCY 4
@@ -18,6 +21,7 @@ typedef struct ParallelWorkerData{
     pthread_cond_t pause_cond;
     int paused;
     int parent_id;
+    DataGenerator* data_generator;
 } ParallelWorkerData;
 
 typedef struct ConcurrencyWorkerData{
@@ -27,8 +31,10 @@ typedef struct ConcurrencyWorkerData{
     pthread_cond_t pause_cond;
     int paused;
     int parallel_value;
+    char *file_name;
     pthread_mutex_t parallel_value_mutex;
     ParallelWorkerData* thread_data;
+
 } ConcurrencyWorkerData;
 
 void adjust_parallel_workers(ParallelWorkerData* thread_data, int active_parallel_value);

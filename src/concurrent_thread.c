@@ -1,7 +1,19 @@
 #include "thread.h"
-
+#include <string.h>
 extern int current_concurrency;
 extern pthread_mutex_t concurrency_mutex;
+
+extern FILE* logFile;
+extern pthread_mutex_t logMutex;
+
+
+char* extract_filename(const char* url) {
+    char *last_slash = strrchr(url, '/');
+    if (last_slash) {
+        return last_slash + 1;  // Move past the '/'
+    }
+    return url;  // Return NULL if no slash found
+}
 
 void set_concurrent_value(int value) {
     pthread_mutex_lock(&concurrency_mutex);
@@ -33,6 +45,8 @@ void resume_concurrency_worker(ConcurrencyWorkerData* data) {
         pthread_cond_signal(&data->pause_cond);
     }
     pthread_mutex_unlock(&data->pause_mutex);
+    int active_parallel_value = get_parallel_value(data);
+    adjust_parallel_workers(data->thread_data, active_parallel_value);
 }
 
 
@@ -42,12 +56,13 @@ void* ConcurrencyThreadFunc(void* arg) {
     int old_active_parallel_value = -1;
     pthread_t threads[MAX_PARALLELISM];
     ParallelWorkerData thread_data[MAX_PARALLELISM];
-
+    DataGenerator *gen = data_generator_init(data->file_name, extract_filename(data->file_name), 10000000, 10000);
     for(int i = 0; i < MAX_PARALLELISM; i++) {
         thread_data[i].id = i;
         thread_data[i].active = 1;
         thread_data[i].paused = 1;
         thread_data[i].parent_id = data->id;
+        thread_data[i].data_generator=gen;
         pthread_mutex_init(&thread_data[i].pause_mutex, NULL);
         pthread_cond_init(&thread_data[i].pause_cond, NULL);
         pthread_create(&threads[i], NULL, ParallelThreadFunc, &thread_data[i]);
@@ -55,7 +70,11 @@ void* ConcurrencyThreadFunc(void* arg) {
 
     data->thread_data = thread_data;
 
-    printf("Concurrent Thread %d creating all parallel threads (paused)\n", data->id);
+    // printf("Concurrent Thread %d creating all parallel threads (paused)\n", data->id);
+    pthread_mutex_lock(&logMutex);
+    fprintf(logFile, "Concurrent Thread %d creating all parallel threads (paused)\n", data->id);
+    pthread_mutex_unlock(&logMutex);
+
     // Following condition is required for thread to be active. If data->active = 0
     // the thread will shut itself down
     while(data->active) {
@@ -80,8 +99,10 @@ void* ConcurrencyThreadFunc(void* arg) {
         // adjust_concurrency_workers(data);  // Adjust concurrency based on global value
         sleep(UPDATE_TIME);
     }
+    pthread_mutex_lock(&logMutex);
+    fprintf(logFile,"Concurrent Thread %d shutting off all parallel threads\n", data->id);
+    pthread_mutex_unlock(&logMutex);
 
-    printf("Concurrent Thread %d shutting off all parallel threads\n", data->id);
     for(int i = 0; i < MAX_PARALLELISM; i++) {
         thread_data[i].active = 0;
     }
