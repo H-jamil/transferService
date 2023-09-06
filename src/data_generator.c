@@ -1,4 +1,5 @@
 #include "data_generator.h"
+#include <stdbool.h>
 #include <string.h>
 
 
@@ -14,11 +15,11 @@ DataGenerator* data_generator_init(char *url, char *o_file, size_t dataSize, siz
     gen->chunk_size = chunkSize;
     gen->currentIndex = 0;
     gen->current_call_number = 0;
-    // gen->file_multiplier = multiplier;
-    // gen->file_multiplier_counter = 0;
+    gen->finished = 0;
     // Initialize mutexes
     pthread_mutex_init(&gen->mutex_generator, NULL);
     pthread_mutex_init(&gen->mutex_outfile_file, NULL);
+    pthread_mutex_init(&gen->mutex_generator_finished, NULL);
     return gen;
 }
 
@@ -26,6 +27,7 @@ DataGenerator* data_generator_init(char *url, char *o_file, size_t dataSize, siz
 parallel_work_data* data_generator_next(DataGenerator *gen) {
     pthread_mutex_lock(&gen->mutex_generator);
     if (gen->currentIndex >= gen->dataSize) {
+        gen->finished = 1;
         pthread_mutex_unlock(&gen->mutex_generator);
         return NULL; // No more chunks to process
     }
@@ -59,4 +61,11 @@ void data_generator_free(DataGenerator *gen) {
     pthread_mutex_destroy(&gen->mutex_generator);
     pthread_mutex_destroy(&gen->mutex_outfile_file);
     free(gen);
+}
+
+bool is_finished(DataGenerator *gen){
+    pthread_mutex_lock(&gen->mutex_generator_finished);
+    bool finished = (gen->finished == 1);
+    pthread_mutex_unlock(&gen->mutex_generator_finished);
+    return finished;
 }

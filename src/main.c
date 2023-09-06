@@ -1,8 +1,31 @@
 #include "thread.h"
+#include "data_generator.h"
+#include "queue.h"
+#include <string.h>
 int current_concurrency = MAX_CONCURRENCY;
 pthread_mutex_t concurrency_mutex;
 FILE* logFile;
 pthread_mutex_t logMutex;
+
+#define CHUNK_SIZE 1000000
+#define MAX_FILE_NUMBER 4
+
+
+void print_queue_data_generator_ids(Queue* queue) {
+    pthread_mutex_lock(&(queue->lock));
+
+    Node* current = queue->front;
+    printf("DataGenerator IDs in Queue:\n");
+    while (current != NULL) {
+        DataGenerator* gen = (DataGenerator*) current->data;
+        if (gen->url) {
+            printf("%s\n", gen->url);
+        }
+        current = current->next;
+    }
+
+    pthread_mutex_unlock(&(queue->lock));
+}
 
 int main() {
     int user_parallelism, user_concurrency;
@@ -17,50 +40,32 @@ int main() {
         perror("Error opening log file");
         exit(1);
     }
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+
+    // Creating Queue
+    Queue *files_need_to_be_downloaded=queue_create();
+    Queue *files_downloaded=queue_create();
+    for (int i = 0; i < MAX_FILE_NUMBER; i++) {
+        char file_url[100];
+        sprintf(file_url, "http://128.205.218.120/FILE%d", i);
+        queue_push(files_need_to_be_downloaded, strdup(file_url));
+    }
+    Queue *generator_queue=get_generator_queue(files_need_to_be_downloaded,CHUNK_SIZE);
+
     // Initialize and start concurrent threads
     for(int i = 0; i < MAX_CONCURRENCY; i++) {
         thread_data[i].id = i;
         thread_data[i].active = 1;
         thread_data[i].paused = 0;
         thread_data[i].parallel_value = 0;
-        thread_data[i].file_name = malloc(50 * sizeof(char));  // Assuming a maximum length of 50 characters for file_name
-        sprintf(thread_data[i].file_name, "http://128.205.218.120/file1GB_%d", i);
+        thread_data[i].files_need_to_be_downloaded=generator_queue;
+        thread_data[i].files_downloaded=files_downloaded;
+        thread_data[i].chunk_size=CHUNK_SIZE;
         pthread_mutex_init(&thread_data[i].pause_mutex, NULL);
         pthread_cond_init(&thread_data[i].pause_cond, NULL);
         pthread_mutex_init(&thread_data[i].parallel_value_mutex, NULL);
         pthread_create(&threads[i], NULL, ConcurrencyThreadFunc, &thread_data[i]);
     }
-
-    // pthread_mutex_lock(&logMutex);
-    // // printf("Main Thread change parallelism to 3 and concurrency to 1\n");
-    // fprintf(logFile,"Main Thread change parallelism to 3 and concurrency to 1\n");
-    // pthread_mutex_unlock(&logMutex);
-    // for (int i = 0; i < MAX_CONCURRENCY; i++) {
-    //     set_parallel_value(&thread_data[i], 3);
-    // }
-    // set_concurrent_value(1);
-    // sleep(2*UPDATE_TIME);
-    // pthread_mutex_lock(&logMutex);
-    // fprintf(logFile,"Main Thread change parallelism to 2 and concurrency to 2\n");
-    // // printf("Main Thread change parallelism to 2 and concurrency to 2\n");
-    // pthread_mutex_unlock(&logMutex);
-    // for (int i = 0; i < MAX_CONCURRENCY; i++) {
-    //     set_parallel_value(&thread_data[i], 2);
-    // }
-    // set_concurrent_value(2);
-    // sleep(2*UPDATE_TIME);
-    // pthread_mutex_lock(&logMutex);
-    // fprintf(logFile,"Main Thread change parallelism to 1 and concurrency to 1\n");
-    // // printf("Main Thread change parallelism to 1 and concurrency to 1\n");
-    // pthread_mutex_unlock(&logMutex);
-    // for (int i = 0; i < MAX_CONCURRENCY; i++) {
-    //     set_parallel_value(&thread_data[i], 1);
-    // }
-    // set_concurrent_value(1);
-    // sleep(2*UPDATE_TIME);
-    // pthread_mutex_lock(&logMutex);
-
-    // printf("Main Thread change parallelism to MAX and concurrency to 4\n");
     do {
         // Prompt user to enter values
         printf("Enter parallelism value (1 to MAX_PARALLELISM): ");
@@ -80,11 +85,16 @@ int main() {
         sleep(2*UPDATE_TIME);
 
         // Ask user if they want to continue changing values
+        printf("Downloaded Queue Size: %d\n", queue_size(files_downloaded));
         printf("Do you want to continue changing values? (y/n): ");
         scanf(" %c", &continueInput); // Note the space before %c to consume any leftover '\n' from the previous input
 
-    } while(continueInput != 'n');
+        if (queue_size(files_downloaded)>= MAX_FILE_NUMBER){
+            break;
+        }
 
+    } while(continueInput != 'n');
+    print_queue_data_generator_ids(files_downloaded);
     fprintf(logFile,"Main Thread change parallelism to MAX and concurrency to MAX\n");
     pthread_mutex_unlock(&logMutex);
     for (int i = 0; i < MAX_CONCURRENCY; i++) {
@@ -92,7 +102,6 @@ int main() {
     }
     set_concurrent_value(MAX_CONCURRENCY);
     sleep(2*UPDATE_TIME);
-
     pthread_mutex_lock(&logMutex);
     // printf("Main thread is shutting off all concurrent threads\n");
     fprintf(logFile,"Main thread is shutting off all concurrent threads\n");
@@ -114,6 +123,9 @@ int main() {
     pthread_mutex_unlock(&logMutex);
     fclose(logFile);
     pthread_mutex_destroy(&logMutex);
-
+    curl_global_cleanup();
+    queue_destroy(files_need_to_be_downloaded);
+    queue_destroy(files_downloaded);
+    queue_destroy(generator_queue);
     return 0;
 }

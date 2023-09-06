@@ -5,7 +5,7 @@ CC = gcc
 CFLAGS = -Wall
 
 # Sources
-SOURCES = main.c concurrent_thread.c parallel_thread.c data_generator.c
+SOURCES = main.c concurrent_thread.c parallel_thread.c data_generator.c queue.c
 
 # Object Files
 OBJ = $(SOURCES:.c=.o)
@@ -16,7 +16,7 @@ EXECUTABLE = parallel_concurrent
 all: $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJ)
-	$(CC) $(CFLAGS) -o $@ $^ -lpthread
+	$(CC) $(CFLAGS) -o $@ $^ -lpthread -lcurl
 	rm -f $(OBJ)
 
 .c.o:

@@ -12,7 +12,7 @@ char* extract_filename(const char* url) {
     if (last_slash) {
         return last_slash + 1;  // Move past the '/'
     }
-    return url;  // Return NULL if no slash found
+    return (char*)url;  // Return the original URL if no slash found
 }
 
 void set_concurrent_value(int value) {
@@ -32,6 +32,7 @@ int get_concurrent_value() {
 void pause_concurrency_worker(ConcurrencyWorkerData* data) {
     pthread_mutex_lock(&data->pause_mutex);
     data->paused = 1;
+    // queue_push(data->files_need_to_be_downloaded,data->gen);
     for (int i = 0; i < MAX_PARALLELISM; i++) {
         pause_parallel_worker(&data->thread_data[i]);
     }
@@ -49,6 +50,37 @@ void resume_concurrency_worker(ConcurrencyWorkerData* data) {
     adjust_parallel_workers(data->thread_data, active_parallel_value);
 }
 
+double get_file_size_from_url(const char *url) {
+    CURL *curl;
+    CURLcode res;
+    double file_size = 0.0;
+
+    curl = curl_easy_init();
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, url);
+        curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);  // HEAD request only, for getting the file size
+        curl_easy_setopt(curl, CURLOPT_FILETIME, 1L);
+
+        res = curl_easy_perform(curl);
+        if (CURLE_OK == res) {
+            res = curl_easy_getinfo(curl, CURLINFO_CONTENT_LENGTH_DOWNLOAD, &file_size);
+        }
+        curl_easy_cleanup(curl);
+    }
+    return file_size;
+}
+
+Queue* get_generator_queue(Queue *files_need_to_be_downloaded, int CHUNK_SIZE){
+    Queue *generator_queue=queue_create();
+    while(queue_size(files_need_to_be_downloaded)>0){
+        char *file_url=queue_pop(files_need_to_be_downloaded);
+        // printf("file_url: %s\n",file_url);
+        double size_of_file=get_file_size_from_url(file_url);
+        DataGenerator *gen = data_generator_init(file_url, extract_filename(file_url), size_of_file,CHUNK_SIZE);
+        queue_push(generator_queue,gen);
+    }
+    return generator_queue;
+}
 
 void* ConcurrencyThreadFunc(void* arg) {
     ConcurrencyWorkerData* data = (ConcurrencyWorkerData*) arg;
@@ -56,7 +88,9 @@ void* ConcurrencyThreadFunc(void* arg) {
     int old_active_parallel_value = -1;
     pthread_t threads[MAX_PARALLELISM];
     ParallelWorkerData thread_data[MAX_PARALLELISM];
-    DataGenerator *gen = data_generator_init(data->file_name, extract_filename(data->file_name), 10000000, 10000);
+    // double size_of_file=get_file_size_from_url(data->file_name);
+    // DataGenerator *gen = data_generator_init(data->file_name, extract_filename(data->file_name), size_of_file,data->chunk_size);
+    DataGenerator *gen = queue_pop(data->files_need_to_be_downloaded);
     for(int i = 0; i < MAX_PARALLELISM; i++) {
         thread_data[i].id = i;
         thread_data[i].active = 1;
@@ -72,7 +106,7 @@ void* ConcurrencyThreadFunc(void* arg) {
 
     // printf("Concurrent Thread %d creating all parallel threads (paused)\n", data->id);
     pthread_mutex_lock(&logMutex);
-    fprintf(logFile, "Concurrent Thread %d creating all parallel threads (paused)\n", data->id);
+    fprintf(logFile, "Concurrent Thread %d creating all parallel threads (status: paused)\n", data->id);
     pthread_mutex_unlock(&logMutex);
 
     // Following condition is required for thread to be active. If data->active = 0
@@ -81,22 +115,28 @@ void* ConcurrencyThreadFunc(void* arg) {
         pthread_mutex_lock(&concurrency_mutex);
         // Concurrency Thread is Paused below if data->id >= current_concurrency is true
         if (data->id >= current_concurrency) {
+            queue_push(data->files_need_to_be_downloaded,gen);
             pthread_mutex_unlock(&concurrency_mutex);
             pause_concurrency_worker(data);
             sleep(UPDATE_TIME);
             continue;
             // Concurrent Thread runs below if above condition is false
-        } else {
-            pthread_mutex_unlock(&concurrency_mutex);
-            resume_concurrency_worker(data);
         }
+        pthread_mutex_unlock(&concurrency_mutex);
+        if (is_finished(gen)) {
+            queue_push(data->files_downloaded, gen); // Add this line to push the finished generator
+            gen = queue_pop(data->files_need_to_be_downloaded);
+            for(int i = 0; i < MAX_PARALLELISM; i++) {
+            thread_data[i].data_generator = gen;
+            }
+            data->thread_data = thread_data;
+        }
+        resume_concurrency_worker(data);
         active_parallel_value = get_parallel_value(data);
-
         if (active_parallel_value != old_active_parallel_value) {
             adjust_parallel_workers(thread_data, active_parallel_value);
             old_active_parallel_value = active_parallel_value;
         }
-        // adjust_concurrency_workers(data);  // Adjust concurrency based on global value
         sleep(UPDATE_TIME);
     }
     pthread_mutex_lock(&logMutex);

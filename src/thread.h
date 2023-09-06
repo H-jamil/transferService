@@ -6,8 +6,9 @@
 #include <pthread.h>
 #include <time.h>
 #include <curl/curl.h>
-#include "/home/hjamil/libzmq/include/zmq.h"
+#include "/home/jamilm/libzmq/include/zmq.h"
 #include "data_generator.h"
+#include "queue.h"
 
 
 #define MAX_CONCURRENCY 4
@@ -31,7 +32,10 @@ typedef struct ConcurrencyWorkerData{
     pthread_cond_t pause_cond;
     int paused;
     int parallel_value;
-    char *file_name;
+    // char *file_name;
+    Queue *files_need_to_be_downloaded;
+    Queue *files_downloaded;
+    int chunk_size;
     pthread_mutex_t parallel_value_mutex;
     ParallelWorkerData* thread_data;
 
@@ -42,8 +46,13 @@ void set_parallel_value(ConcurrencyWorkerData* data, int value);
 int get_parallel_value(ConcurrencyWorkerData* data);
 void pause_parallel_worker(ParallelWorkerData* data);
 void resume_parallel_worker(ParallelWorkerData* data);
+size_t write_callback_parallel(char *ptr, size_t size, size_t nmemb, void *userdata);
+void download_part(parallel_work_data *data);
 void* ParallelThreadFunc(void* arg);
 
+char* extract_filename(const char* url);
+double get_file_size_from_url(const char *url);
+Queue* get_generator_queue(Queue *files_need_to_be_downloaded,int CHUNK_SIZE);
 void set_concurrent_value(int value);
 int get_concurrent_value();
 void pause_concurrency_worker(ConcurrencyWorkerData* data);

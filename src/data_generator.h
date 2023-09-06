@@ -8,6 +8,7 @@
 #include <sched.h>
 #include <assert.h>
 #include <unistd.h>
+#include <stdbool.h>
 #include <sys/time.h>
 
 typedef struct parallel_work_data{
@@ -30,13 +31,15 @@ typedef struct DataGenerator{
   size_t chunk_size;
   size_t currentIndex;
   int current_call_number;
+  int finished;
   // int file_multiplier;
   // int file_multiplier_counter;
   pthread_mutex_t mutex_generator;
   pthread_mutex_t mutex_outfile_file;
-
+  pthread_mutex_t mutex_generator_finished;
 }DataGenerator;
 
+bool is_finished(DataGenerator *gen);
 // DataGenerator* data_generator_init(char *url, char *o_file, size_t dataSize, size_t chunkSize, int multiplier);
 DataGenerator* data_generator_init(char *url, char *o_file, size_t dataSize, size_t chunkSize);
 parallel_work_data* data_generator_next(DataGenerator *gen);
