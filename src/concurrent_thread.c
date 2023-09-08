@@ -6,7 +6,6 @@ extern pthread_mutex_t concurrency_mutex;
 extern FILE* logFile;
 extern pthread_mutex_t logMutex;
 
-
 char* extract_filename(const char* url) {
     char *last_slash = strrchr(url, '/');
     if (last_slash) {
@@ -27,7 +26,6 @@ int get_concurrent_value() {
     pthread_mutex_unlock(&concurrency_mutex);
     return value;
 }
-
 
 void pause_concurrency_worker(ConcurrencyWorkerData* data) {
     pthread_mutex_lock(&data->pause_mutex);
@@ -112,6 +110,7 @@ void* ConcurrencyThreadFunc(void* arg) {
     // Following condition is required for thread to be active. If data->active = 0
     // the thread will shut itself down
     while(data->active) {
+    // while(active_status) {
         pthread_mutex_lock(&concurrency_mutex);
         // Concurrency Thread is Paused below if data->id >= current_concurrency is true
         if (data->id >= current_concurrency) {
@@ -152,5 +151,7 @@ void* ConcurrencyThreadFunc(void* arg) {
         pthread_cond_destroy(&thread_data[i].pause_cond);
     }
 
-    return NULL;
+    // return NULL;
+    printf("Concurrent Thread %d shutting itself off\n", data->id);
+    pthread_exit(NULL);
 }

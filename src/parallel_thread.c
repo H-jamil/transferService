@@ -3,7 +3,6 @@
 extern FILE* logFile;
 extern pthread_mutex_t logMutex;
 
-
 void adjust_parallel_workers(ParallelWorkerData* thread_data, int active_parallel_value) {
     for(int i = 0; i < active_parallel_value; i++) {
         resume_parallel_worker(&thread_data[i]);
@@ -82,6 +81,7 @@ void* ParallelThreadFunc(void* arg) {
     // Following condition is required for thread to be active. If data->active = 0
     // the thread will shut itself down
     while(data->active) {
+    // while(active_status) {
         pthread_mutex_lock(&data->pause_mutex);
         // Parallel Thread is Paused below if data->paused is true
         while(data->paused) {
@@ -99,8 +99,8 @@ void* ParallelThreadFunc(void* arg) {
             // the download part of the code from a generator
 
             if((chunk = data_generator_next(data->data_generator))!=NULL){
-                // sleep(1);
-                download_part(chunk);
+                sleep(0.2);
+                // download_par1(chunk);
             }
             else{
                 // data->active=0;
@@ -108,9 +108,9 @@ void* ParallelThreadFunc(void* arg) {
             }
             time(&now);
             // printf("Parent ID : %d thread ID: %d, work url : %s , start_byte :%ld \n", data->parent_id, data->id, chunk->url, chunk->start_byte);
-            pthread_mutex_lock(&logMutex);
-            fprintf(logFile,"Parent ID : %d thread ID: %d, file name: %s , start_byte :%ld \n", data->parent_id, data->id, chunk->output_file, chunk->start_byte);
-            pthread_mutex_unlock(&logMutex);
+            // pthread_mutex_lock(&logMutex);
+            // fprintf(logFile,"Parent ID : %d thread ID: %d, file name: %s , start_byte :%ld \n", data->parent_id, data->id, chunk->output_file, chunk->start_byte);
+            // pthread_mutex_unlock(&logMutex);
             clock_gettime(CLOCK_MONOTONIC, &current);
         } while ((current.tv_sec - start.tv_sec) + (current.tv_nsec - start.tv_nsec) / 1e9 < 1.0);
 
@@ -120,6 +120,6 @@ void* ParallelThreadFunc(void* arg) {
     pthread_mutex_unlock(&logMutex);
     fprintf(logFile,"Parent ID : %d thread ID: %d, shutting itself off\n", data->parent_id, data->id);
     pthread_mutex_unlock(&logMutex);
+    pthread_exit(NULL);
 
-    return NULL;
 }
