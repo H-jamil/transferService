@@ -1,0 +1,73 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <pthread.h>
+#include <time.h>
+#include <curl/curl.h>
+
+#define MAX_CONCURRENCY 4
+#define MAX_PARALLELISM 4
+#define UPDATE_TIME 3
+
+
+typedef struct ParallelWorkerData{
+    int id;
+    int active;
+    pthread_mutex_t pause_mutex;
+    pthread_cond_t pause_cond;
+    int paused;
+    int parent_id;
+} ParallelWorkerData;
+
+void pause_parallel_worker(ParallelWorkerData* data) {
+    pthread_mutex_lock(&data->pause_mutex);
+    data->paused = 1;
+    pthread_mutex_unlock(&data->pause_mutex);
+}
+
+void resume_parallel_worker(ParallelWorkerData* data) {
+    pthread_mutex_lock(&data->pause_mutex);
+    data->paused = 0;
+    pthread_cond_signal(&data->pause_cond);
+    pthread_mutex_unlock(&data->pause_mutex);
+}
+
+void adjust_parallel_workers(ParallelWorkerData* thread_data, int active_parallel_value) {
+    for(int i = 0; i < active_parallel_value; i++) {
+        resume_parallel_worker(&thread_data[i]);
+    }
+    for(int i = active_parallel_value; i < MAX_PARALLELISM; i++) {
+        pause_parallel_worker(&thread_data[i]);
+    }
+}
+
+// void terminate_parallel_worker(ParallelWorkerData* data) {
+//     data->active = 0;
+// }
+
+void terminate_parallel_worker(pthread_t* thread) {
+    pthread_cancel(*thread);
+}
+
+void* ParallelThreadFunc(void* arg) {
+    ParallelWorkerData* data = (ParallelWorkerData*) arg;
+    while(data->active) {
+        pthread_mutex_lock(&data->pause_mutex);
+        while(data->paused) {
+            pthread_cond_wait(&data->pause_cond, &data->pause_mutex);
+        }
+        pthread_mutex_unlock(&data->pause_mutex);
+        struct timespec start, current;
+        clock_gettime(CLOCK_MONOTONIC, &start);
+        do {
+            printf("Parent ID : %d thread ID: %d, doing some work\n", data->parent_id, data->id);
+            sleep(1);
+            clock_gettime(CLOCK_MONOTONIC, &current);
+        } while ((current.tv_sec - start.tv_sec) + (current.tv_nsec - start.tv_nsec) / 1e9 < 1.0);
+
+    }
+    printf("Parent ID : %d thread ID: %d, exiting\n", data->parent_id, data->id);
+    return NULL;
+}
+
+
