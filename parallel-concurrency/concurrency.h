@@ -12,8 +12,10 @@ typedef struct ConcurrencyWorkerData {
     int active;
     pthread_mutex_t pause_mutex;
     pthread_cond_t pause_cond;
+    pthread_mutex_t parallel_value_mutex;
     int paused;
     int parallel_value;
+    DataGenerator* generator;
     ParallelWorkerData* thread_data;
 } ConcurrencyWorkerData;
 

@@ -2,10 +2,10 @@
 CC = gcc
 
 # Compiler Flags
-CFLAGS = -Wall
+CFLAGS = -Wall -g
 
 # Sources
-SOURCES = main.c parallel.c concurrency.c
+SOURCES = main.c parallel.c concurrency.c data_generator.c
 
 # Object Files
 OBJ = $(SOURCES:.c=.o)
