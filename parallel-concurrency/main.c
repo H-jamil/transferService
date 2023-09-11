@@ -1,11 +1,15 @@
 #include "parallel.h"
 #include "concurrency.h"
 #include <curl/curl.h>
+#include "queue.h"
 
-#define MAX_FILE_NUMBER 4
+#define MAX_FILE_NUMBER 8
 #define CHUNK_SIZE 5000000
+
 int current_concurrency;
 pthread_mutex_t concurrency_mutex;
+int current_parallelism;
+pthread_mutex_t parallelism_mutex;
 
 char* extract_filename(const char* url) {
     char *last_slash = strrchr(url, '/');
@@ -39,7 +43,9 @@ double get_file_size_from_url(const char *url) {
 int main(int argc, char** argv) {
     // Initialize concurrency
     current_concurrency = 0;
+    current_parallelism = 0;
     pthread_mutex_init(&concurrency_mutex, NULL);
+    pthread_mutex_init(&parallelism_mutex, NULL);
     pthread_t threads[MAX_CONCURRENCY];
     ConcurrencyWorkerData thread_data[MAX_CONCURRENCY];
     DataGenerator* gen[MAX_FILE_NUMBER];
@@ -65,53 +71,39 @@ int main(int argc, char** argv) {
     sleep(1);  // Give threads a moment to start
 
     printf("concurrent threads 2 parallel threads 3\n");
-    for (int i = 0; i < MAX_CONCURRENCY; i++) {
-            set_parallel_value(&thread_data[i], 3);
-        }
-    set_concurrent_value(2);
+    set_parallel_value(4);
+    set_concurrent_value(4);
     sleep(2*UPDATE_TIME);
 
     printf("concurrent threads 1 parallel threads 2\n");
-    for (int i = 0; i < MAX_CONCURRENCY; i++) {
-            set_parallel_value(&thread_data[i], 2);
-        }
-    set_concurrent_value(1);
+    set_parallel_value(2);
+    set_concurrent_value(4);
     sleep(2*UPDATE_TIME);
 
     printf("concurrent threads 4 parallel threads 4\n");
-    for (int i = 0; i < MAX_CONCURRENCY; i++) {
-            set_parallel_value(&thread_data[i], 4);
-        }
+    set_parallel_value(4);
     set_concurrent_value(4);
     sleep(2*UPDATE_TIME);
 
     printf("concurrent threads 1 parallel threads 1\n");
-    for (int i = 0; i < MAX_CONCURRENCY; i++) {
-            set_parallel_value(&thread_data[i], 1);
-        }
+    set_parallel_value(1);
     set_concurrent_value(1);
     sleep(2*UPDATE_TIME);
 
     printf("concurrent threads 2 parallel threads 2\n");
-    for (int i = 0; i < MAX_CONCURRENCY; i++) {
-            set_parallel_value(&thread_data[i], 2);
-        }
+    set_parallel_value(2);
     set_concurrent_value(2);
     sleep(2*UPDATE_TIME);
 
     printf("concurrent threads 3 parallel threads 3\n");
-    for (int i = 0; i < MAX_CONCURRENCY; i++) {
-            set_parallel_value(&thread_data[i], 3);
-        }
+    set_parallel_value(3);
     set_concurrent_value(3);
     sleep(2*UPDATE_TIME);
 
     printf("concurrent threads 4 parallel threads 4\n");
-    for (int i = 0; i < MAX_CONCURRENCY; i++) {
-            set_parallel_value(&thread_data[i], 4);
-        }
+    set_parallel_value(4);
     set_concurrent_value(4);
-    sleep(4*UPDATE_TIME);
+    sleep(2*UPDATE_TIME);
 
 
     for(int i = 0; i < MAX_CONCURRENCY; i++) {

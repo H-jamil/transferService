@@ -1,9 +1,12 @@
 #include <string.h>
 #include "parallel.h"
 #include "data_generator.h"
+#include "queue.h"
+
 extern int current_concurrency;
 extern pthread_mutex_t concurrency_mutex;
-
+extern int current_parallelism;
+extern pthread_mutex_t parallelism_mutex;
 
 typedef struct ConcurrencyWorkerData{
     int id;
@@ -12,9 +15,9 @@ typedef struct ConcurrencyWorkerData{
     pthread_cond_t pause_cond;
     pthread_mutex_t parallel_value_mutex;
     int paused;
-    int parallel_value;
     DataGenerator* generator;
     ParallelWorkerData* thread_data;
+    Queue *files_need_to_be_downloaded;
 } ConcurrencyWorkerData;
 
 void set_concurrent_value(int value) {
@@ -30,16 +33,18 @@ int get_concurrent_value() {
     return value;
 }
 
-void set_parallel_value(ConcurrencyWorkerData* data, int value) {
-    pthread_mutex_lock(&data->parallel_value_mutex);
-    data->parallel_value = value;
-    pthread_mutex_unlock(&data->parallel_value_mutex);
+
+void set_parallel_value(int value) {
+    pthread_mutex_lock(&parallelism_mutex);
+    current_parallelism = value;
+    pthread_mutex_unlock(&parallelism_mutex);
 }
 
-int get_parallel_value(ConcurrencyWorkerData* data) {
-    pthread_mutex_lock(&data->parallel_value_mutex);
-    int value = data->parallel_value;
-    pthread_mutex_unlock(&data->parallel_value_mutex);
+
+int get_parallel_value() {
+    pthread_mutex_lock(&parallelism_mutex);
+    int value = current_parallelism;
+    pthread_mutex_unlock(&parallelism_mutex);
     return value;
 }
 
@@ -68,12 +73,12 @@ void* ConcurrencyThreadFunc(void* arg) {
     int active_parallel_value = 0;
     int old_active_parallel_value = -1;
     pthread_t threads[MAX_PARALLELISM];
-    // ParallelWorkerData thread_data[MAX_PARALLELISM];
     ParallelWorkerData* thread_data = malloc(MAX_PARALLELISM * sizeof(ParallelWorkerData));
     if(!thread_data) {
         perror("Failed to allocate memory for thread_data");
         return NULL;
     }
+    DataGenerator *gen = queue_pop(data->files_need_to_be_downloaded);
     for(int i = 0; i < MAX_PARALLELISM; i++) {
         thread_data[i].id = i;
         thread_data[i].active = 1;
@@ -96,7 +101,7 @@ void* ConcurrencyThreadFunc(void* arg) {
         }
         pthread_mutex_unlock(&concurrency_mutex);
         resume_concurrency_worker(data);
-        active_parallel_value = get_parallel_value(data);
+        active_parallel_value = get_parallel_value();
         if (active_parallel_value != old_active_parallel_value) {
             adjust_parallel_workers(thread_data, active_parallel_value);
             old_active_parallel_value = active_parallel_value;
@@ -105,8 +110,6 @@ void* ConcurrencyThreadFunc(void* arg) {
     }
     printf("Concurrent Thread %d exiting\n", data->id);
     for(int i = 0; i < MAX_PARALLELISM; i++) {
-    //   terminate_parallel_worker(threads[i]);
-        // terminate_parallel_worker(&thread_data[i]);
         thread_data[i].active = 0;
     }
     for(int i = 0; i < MAX_PARALLELISM; i++) {

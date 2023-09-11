@@ -43,14 +43,9 @@ void adjust_parallel_workers(ParallelWorkerData* thread_data, int active_paralle
     }
 }
 
-// void terminate_parallel_worker(ParallelWorkerData* data) {
-//     data->active = 0;
-// }
-
 size_t write_callback_parallel(char *ptr, size_t size, size_t nmemb, void *userdata) {
     parallel_work_data *data = (parallel_work_data *)userdata;
     size_t actual_size = size * nmemb;
-    // printf("Writing %ld bytes to file %s\n", actual_size, data->output_file);
     FILE *fp = fopen(data->output_file, "r+b");
     if (!fp) {
         fp = fopen(data->output_file, "wb");
@@ -66,15 +61,13 @@ size_t write_callback_parallel(char *ptr, size_t size, size_t nmemb, void *userd
 
     return actual_size;
 }
-// size_t write_callback_parallel(char *ptr, size_t size, size_t nmemb, void *userdata) {
-//     // parallel_work_data *data = (parallel_work_data *)userdata;
-//     size_t actual_size = size * nmemb;
-
-//     // Update the start_byte value
-//     // data->start_byte += actual_size;
-
-//     return actual_size;
-// }
+size_t write_callback_parallel_no_disk(char *ptr, size_t size, size_t nmemb, void *userdata) {
+    parallel_work_data *data = (parallel_work_data *)userdata;
+    size_t actual_size = size * nmemb;
+    // Update the start_byte value
+    data->start_byte += actual_size;
+    return actual_size;
+}
 
 void download_part(parallel_work_data *data) {
     CURL *curl = curl_easy_init();
@@ -126,5 +119,3 @@ void* ParallelThreadFunc(void* arg) {
     printf("Parent ID : %d thread ID: %d, exiting\n", data->parent_id, data->id);
     return NULL;
 }
-
-
