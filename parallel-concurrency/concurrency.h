@@ -17,6 +17,7 @@ typedef struct ConcurrencyWorkerData {
     int paused;
     DataGenerator* generator;
     ParallelWorkerData* thread_data;
+    Queue *files_need_to_be_downloaded;
 } ConcurrencyWorkerData;
 
 void set_concurrent_value(int value);

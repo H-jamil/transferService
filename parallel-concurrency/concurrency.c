@@ -84,7 +84,7 @@ void* ConcurrencyThreadFunc(void* arg) {
         thread_data[i].active = 1;
         thread_data[i].paused = 1;
         thread_data[i].parent_id = data->id;
-        thread_data[i].generator = data->generator;
+        thread_data[i].generator = gen;
         pthread_mutex_init(&thread_data[i].pause_mutex, NULL);
         pthread_cond_init(&thread_data[i].pause_cond, NULL);
         pthread_create(&threads[i], NULL, ParallelThreadFunc, &thread_data[i]);
@@ -95,11 +95,24 @@ void* ConcurrencyThreadFunc(void* arg) {
         pthread_mutex_lock(&concurrency_mutex);
         if (data->id >= current_concurrency) {
             pthread_mutex_unlock(&concurrency_mutex);
+            // queue_push(data->files_need_to_be_downloaded,gen);
+            // gen = NULL;
+            // for(int i = 0; i < MAX_PARALLELISM; i++) {
+            //     thread_data[i].generator = gen;
+            //     }
+            // data->thread_data = thread_data;
             pause_concurrency_worker(data);
             sleep(UPDATE_TIME);
             continue;
         }
         pthread_mutex_unlock(&concurrency_mutex);
+        if (is_finished(gen)) {
+            gen = queue_pop(data->files_need_to_be_downloaded);
+            for(int i = 0; i < MAX_PARALLELISM; i++) {
+                thread_data[i].generator = gen;
+                }
+            data->thread_data = thread_data;
+        }
         resume_concurrency_worker(data);
         active_parallel_value = get_parallel_value();
         if (active_parallel_value != old_active_parallel_value) {

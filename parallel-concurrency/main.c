@@ -1,7 +1,8 @@
 #include "parallel.h"
 #include "concurrency.h"
+// #include "queue.h"
 #include <curl/curl.h>
-#include "queue.h"
+
 
 #define MAX_FILE_NUMBER 8
 #define CHUNK_SIZE 5000000
@@ -39,6 +40,17 @@ double get_file_size_from_url(const char *url) {
     return file_size;
 }
 
+Queue* get_generator_queue(Queue *files_need_to_be_downloaded, int chunk_size){
+    Queue *generator_queue=queue_create();
+    while(queue_size(files_need_to_be_downloaded)>0){
+        char *file_url=queue_pop(files_need_to_be_downloaded);
+        // printf("file_url: %s\n",file_url);
+        double size_of_file=get_file_size_from_url(file_url);
+        DataGenerator *gen = data_generator_init(file_url, extract_filename(file_url), size_of_file,chunk_size);
+        queue_push(generator_queue,gen);
+    }
+    return generator_queue;
+}
 
 int main(int argc, char** argv) {
     // Initialize concurrency
@@ -48,19 +60,24 @@ int main(int argc, char** argv) {
     pthread_mutex_init(&parallelism_mutex, NULL);
     pthread_t threads[MAX_CONCURRENCY];
     ConcurrencyWorkerData thread_data[MAX_CONCURRENCY];
-    DataGenerator* gen[MAX_FILE_NUMBER];
+    // DataGenerator* gen[MAX_FILE_NUMBER];
     curl_global_init(CURL_GLOBAL_DEFAULT);
+    Queue *files_need_to_be_downloaded=queue_create();
+    for (int i = 0; i < MAX_FILE_NUMBER; i++) {
+        char file_url[100];
+        sprintf(file_url, "http://128.205.218.120/FILE%d", i);
+        queue_push(files_need_to_be_downloaded, strdup(file_url));
+    }
+    Queue *generator_queue=get_generator_queue(files_need_to_be_downloaded,CHUNK_SIZE);
 
+    printf("From Main thread beginning Queue size: %d\n",queue_size(generator_queue));
     for (int i = 0; i < MAX_CONCURRENCY; i++) {
         thread_data[i].id = i;
         thread_data[i].active = 1;
         thread_data[i].paused = 1;  // All threads start in paused state
         thread_data[i].thread_data=NULL;
-        char file_url[100];
-        sprintf(file_url, "http://128.205.218.120/FILE%d", i);
-        double size_of_file = get_file_size_from_url(file_url);
-        gen[i] = data_generator_init(file_url, extract_filename(file_url), size_of_file,CHUNK_SIZE);
-        thread_data[i].generator = gen[i];
+        thread_data[i].files_need_to_be_downloaded=generator_queue;
+        thread_data[i].generator = NULL;
         pthread_mutex_init(&thread_data[i].pause_mutex, NULL);
         pthread_cond_init(&thread_data[i].pause_cond, NULL);
         pthread_mutex_init(&thread_data[i].parallel_value_mutex, NULL);
@@ -69,7 +86,9 @@ int main(int argc, char** argv) {
     }
     // Adjust threads as described
     sleep(1);  // Give threads a moment to start
-
+int queue_size_int=0;
+while((queue_size_int=queue_size(generator_queue))>0){
+    printf("queue_size_int: %d\n",queue_size_int);
     printf("concurrent threads 2 parallel threads 3\n");
     set_parallel_value(4);
     set_concurrent_value(4);
@@ -104,7 +123,13 @@ int main(int argc, char** argv) {
     set_parallel_value(4);
     set_concurrent_value(4);
     sleep(2*UPDATE_TIME);
+   }
+    printf("From Main thread ending Queue size: %d\n",queue_size(generator_queue));
 
+    // for(int i = 0; i < MAX_CONCURRENCY; i++) {
+    //     pthread_cancel(threads[i]);
+    // }
+    // return 0;
 
     for(int i = 0; i < MAX_CONCURRENCY; i++) {
         thread_data[i].active = 0;
@@ -116,9 +141,10 @@ int main(int argc, char** argv) {
         pthread_cond_destroy(&thread_data[i].pause_cond);
         pthread_mutex_destroy(&thread_data[i].parallel_value_mutex);
     }
-    for(int i = 0; i < MAX_FILE_NUMBER; i++) {
-        data_generator_free(gen[i]);
-    }
+    printf("From Main thread ending Queue size: %d\n",queue_size(generator_queue));
+
+    queue_destroy(files_need_to_be_downloaded);
+    queue_destroy(generator_queue);
     curl_global_cleanup();
     pthread_mutex_destroy(&concurrency_mutex);
     return 0;

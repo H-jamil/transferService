@@ -104,6 +104,9 @@ void* ParallelThreadFunc(void* arg) {
         clock_gettime(CLOCK_MONOTONIC, &start);
         // why following loop is required? Can you not use it?
         do {
+            // if (data->generator == NULL) {
+            //     break;
+            // }
             if((chunk = data_generator_next(data->generator))!=NULL){
                 // printf("Parent ID : %d thread ID: %d, work file: %s, start byte: %ld, end byte: %ld\n", data->parent_id, data->id, chunk->output_file, chunk->start_byte, chunk->end_byte);
                 download_part(chunk);

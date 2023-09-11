@@ -25,6 +25,9 @@ DataGenerator* data_generator_init(char *url, char *o_file, size_t dataSize, siz
 
 // Fetch next chunk of work
 parallel_work_data* data_generator_next(DataGenerator *gen) {
+    if (gen == NULL) {
+        return NULL;
+    }
     pthread_mutex_lock(&gen->mutex_generator);
     if (gen->currentIndex >= gen->dataSize) {
         gen->finished = 1;
@@ -65,6 +68,9 @@ void data_generator_free(DataGenerator *gen) {
 }
 
 bool is_finished(DataGenerator *gen){
+    if (gen == NULL) {
+        return false;
+    }
     pthread_mutex_lock(&gen->mutex_generator_finished);
     bool finished = (gen->finished == 1);
     pthread_mutex_unlock(&gen->mutex_generator_finished);
