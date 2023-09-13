@@ -1,295 +1,32 @@
-From Main thread beginning Queue size: 8
-Concurrent Thread 1 creating all parallel threads (status: paused)
-Concurrent Thread 2 creating all parallel threads (status: paused)
-Concurrent Thread 3 creating all parallel threads (status: paused)
 Concurrent Thread 0 creating all parallel threads (status: paused)
-MT changed P to 2 and C to 2 with 0 files downloaded
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :10000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :10000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :5000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :5000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :15000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :15000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :20000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :25000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :20000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :25000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :30000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :30000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :35000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :40000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :35000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :40000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :50000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :45000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :45000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :55000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :50000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :60000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :55000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :65000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :70000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :65000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :60000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :75000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :75000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :80000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :70000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :85000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :90000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :80000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :85000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :95000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :100000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :90000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :95000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :105000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :110000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :100000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :105000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :115000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :110000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :115000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :120000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :120000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :125000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :125000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :130000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :130000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :135000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :140000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :135000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :145000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :145000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :140000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :150000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :155000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :155000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :150000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :160000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :165000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :170000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :160000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :165000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :175000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :180000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :170000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :175000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :190000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :185000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :195000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :185000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :180000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :190000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :200000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :205000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :210000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :195000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :200000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :215000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :220000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :210000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :205000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :230000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :225000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :215000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :220000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :240000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :235000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :230000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :225000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :245000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :250000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :240000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :235000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :245000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :260000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :255000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :250000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :255000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :270000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :265000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :265000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :260000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :275000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :270000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :280000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :275000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :285000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :290000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :280000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :285000000 
-MT changed P to 2 and C to 2 with 0 files downloaded
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :300000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :295000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :290000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :295000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :300000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :305000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :305000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :310000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :315000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :320000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :310000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :315000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :325000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :330000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :320000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :325000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :335000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :330000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :340000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :335000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :340000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :350000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :345000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :345000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :350000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :355000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :360000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :355000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :360000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :370000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :365000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :375000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :370000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :365000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :385000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :380000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :375000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :395000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :390000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :380000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :385000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :390000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :400000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :405000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :400000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :415000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :395000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :405000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :410000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :410000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :420000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :420000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :425000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :415000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :430000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :425000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :435000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :430000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :440000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :435000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :445000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :440000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :445000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :450000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :455000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :450000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :460000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :455000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :465000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :460000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :470000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :465000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :475000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :475000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :480000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :470000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :485000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :480000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :495000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :490000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :485000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :490000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :500000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :495000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :500000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :505000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :510000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :515000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :510000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :505000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :520000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :525000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :515000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :530000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :520000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :535000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :525000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :540000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :530000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :545000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :550000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :535000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :540000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :555000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :545000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :560000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :550000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :565000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :555000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :570000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :560000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :570000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :575000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :580000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :565000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :575000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :585000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :585000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :595000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :590000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :580000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :605000000 
-MT changed P to 2 and C to 2 with 0 files downloaded
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :590000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :600000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :595000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :610000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :600000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :605000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :615000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :620000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :610000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :615000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :625000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :630000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :620000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :625000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :635000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :640000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :635000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :630000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :645000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :640000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :645000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :650000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :655000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :650000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :655000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :660000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :665000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :660000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :665000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :670000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :675000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :680000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :685000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :675000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :670000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :690000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :680000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :695000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :685000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :690000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :705000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :700000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :695000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :710000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :700000000 
-Parent ID : 0 thread ID: 1, file name: FILE2 , start_byte :715000000 
-Parent ID : 1 thread ID: 0, file name: FILE0 , start_byte :705000000 
-Parent ID : 1 thread ID: 1, file name: FILE0 , start_byte :710000000 
-Parent ID : 0 thread ID: 0, file name: FILE2 , start_byte :720000000 
-Parent ID : 1 thread ID: 0, file
+Concurrent Thread 2 creating all parallel threads (status: paused)
+Concurrent Thread 1 creating all parallel threads (status: paused)
+Concurrent Thread 3 creating all parallel threads (status: paused)
+Main Thread changed parallelism to 2 and concurrency to 2
+Main Thread changed parallelism to 2 and concurrency to 2
+Main Thread changed parallelism to 2 and concurrency to 2
+Main Thread changed parallelism to 1 and concurrency to 1
+Main Thread changed parallelism to 2 and concurrency to 2
+Main Thread changed parallelism to 4 and concurrency to 4
+Main Thread change parallelism to MAX and concurrency to MAX
+Main thread is shutting off all concurrent threads
+Concurrent Thread 2 shutting off all parallel threads
+Parent ID : 2 thread ID: 1, shutting itself off
+Parent ID : 2 thread ID: 3, shutting itself off
+Parent ID : 2 thread ID: 2, shutting itself off
+Parent ID : 2 thread ID: 0, shutting itself off
+Concurrent Thread 3 shutting off all parallel threads
+Parent ID : 3 thread ID: 0, shutting itself off
+Parent ID : 3 thread ID: 1, shutting itself off
+Concurrent Thread 1 shutting off all parallel threads
+Concurrent Thread 0 shutting off all parallel threads
+Parent ID : 0 thread ID: 1, shutting itself off
+Parent ID : 1 thread ID: 3, shutting itself off
+Parent ID : 0 thread ID: 2, shutting itself off
+Parent ID : 1 thread ID: 1, shutting itself off
+Parent ID : 0 thread ID: 3, shutting itself off
+Parent ID : 3 thread ID: 3, shutting itself off
+Parent ID : 1 thread ID: 0, shutting itself off
+Parent ID : 1 thread ID: 2, shutting itself off
+Parent ID : 3 thread ID: 2, shutting itself off
+Parent ID : 0 thread ID: 0, shutting itself off

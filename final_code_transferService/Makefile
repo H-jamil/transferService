@@ -2,16 +2,16 @@
 CC = gcc
 
 # Compiler Flags
-CFLAGS = -Wall -g
+CFLAGS = -Wall
 
 # Sources
-SOURCES = main.c parallel.c concurrency.c queue.c data_generator.c
+SOURCES = main.c concurrent_thread.c parallel_thread.c data_generator.c queue.c
 
 # Object Files
 OBJ = $(SOURCES:.c=.o)
 
 # Executable
-EXECUTABLE = program
+EXECUTABLE = parallel_concurrent
 
 all: $(EXECUTABLE)
 

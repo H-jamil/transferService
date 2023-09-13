@@ -4,13 +4,11 @@
 
 Queue* queue_create() {
     Queue* queue = malloc(sizeof(Queue));
-    if (!queue) {
-        return NULL;  // Handle memory allocation failure
-    }
     queue->front = NULL;
     queue->rear = NULL;
     pthread_mutex_init(&(queue->lock), NULL);
-    atomic_init(&queue->size, 0); // Initialize size to 0
+    pthread_cond_init(&(queue->cond), NULL);
+    queue->size = 0;
     return queue;
 }
 
@@ -22,15 +20,12 @@ void queue_destroy(Queue* queue) {
         current = next;
     }
     pthread_mutex_destroy(&(queue->lock));
+    pthread_cond_destroy(&(queue->cond));
     free(queue);
 }
 
 void queue_push(Queue* queue, void* data) {
     Node* new_node = malloc(sizeof(Node));
-    if (!new_node) {
-        // Handle memory allocation failure (e.g., return or log error)
-        return;
-    }
     new_node->data = data;
     new_node->next = NULL;
 
@@ -42,7 +37,8 @@ void queue_push(Queue* queue, void* data) {
         queue->front = new_node;
         queue->rear = new_node;
     }
-    atomic_fetch_add(&queue->size, 1); // Increment size atomically
+    queue->size++;
+    pthread_cond_signal(&(queue->cond));
     pthread_mutex_unlock(&(queue->lock));
 }
 
@@ -58,12 +54,15 @@ void* queue_pop(Queue* queue) {
     if (queue->front == NULL) {
         queue->rear = NULL;
     }
-    atomic_fetch_sub(&queue->size, 1); // Decrement size atomically
+    queue->size--;
     pthread_mutex_unlock(&(queue->lock));
     free(front_node);
     return data;
 }
 
 int queue_size(Queue* queue) {
-    return atomic_load(&queue->size); // Load the current size atomically
+    pthread_mutex_lock(&(queue->lock));
+    int size = queue->size;
+    pthread_mutex_unlock(&(queue->lock));
+    return size;
 }
