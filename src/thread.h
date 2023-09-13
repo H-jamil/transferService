@@ -11,8 +11,8 @@
 #include "queue.h"
 
 
-#define MAX_CONCURRENCY 4
-#define MAX_PARALLELISM 4
+#define MAX_CONCURRENCY 8
+#define MAX_PARALLELISM 8
 #define UPDATE_TIME 3
 
 typedef struct ParallelWorkerData{
@@ -32,7 +32,6 @@ typedef struct ConcurrencyWorkerData{
     pthread_cond_t pause_cond;
     int paused;
     int parallel_value;
-    // char *file_name;
     Queue *files_need_to_be_downloaded;
     Queue *files_downloaded;
     int chunk_size;

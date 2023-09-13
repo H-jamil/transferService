@@ -13,6 +13,7 @@ typedef struct Queue {
     Node* front;
     Node* rear;
     pthread_mutex_t lock;
+    pthread_mutex_t size_lock;
     pthread_cond_t cond;
     int size;
 } Queue;

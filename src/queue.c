@@ -8,6 +8,7 @@ Queue* queue_create() {
     queue->rear = NULL;
     pthread_mutex_init(&(queue->lock), NULL);
     pthread_cond_init(&(queue->cond), NULL);
+    pthread_mutex_init(&(queue->size_lock), NULL);
     queue->size = 0;
     return queue;
 }
@@ -21,6 +22,7 @@ void queue_destroy(Queue* queue) {
     }
     pthread_mutex_destroy(&(queue->lock));
     pthread_cond_destroy(&(queue->cond));
+    pthread_mutex_destroy(&(queue->size_lock));
     free(queue);
 }
 
@@ -60,8 +62,8 @@ void* queue_pop(Queue* queue) {
 }
 
 int queue_size(Queue* queue) {
-    pthread_mutex_lock(&(queue->lock));
+    pthread_mutex_lock(&(queue->size_lock));
     int size = queue->size;
-    pthread_mutex_unlock(&(queue->lock));
+    pthread_mutex_unlock(&(queue->size_lock ));
     return size;
 }

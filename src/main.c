@@ -6,9 +6,8 @@ int current_concurrency = MAX_CONCURRENCY;
 pthread_mutex_t concurrency_mutex;
 FILE* logFile;
 pthread_mutex_t logMutex;
-
-#define CHUNK_SIZE 1000000
-#define MAX_FILE_NUMBER 4
+#define CHUNK_SIZE 10000000
+#define MAX_FILE_NUMBER 8
 
 
 void print_queue_data_generator_ids(Queue* queue) {
@@ -28,7 +27,7 @@ void print_queue_data_generator_ids(Queue* queue) {
 }
 
 int main() {
-    int user_parallelism, user_concurrency;
+    int user_parallelism, user_concurrency, queue_size_num;
     char continueInput = 'y';
     pthread_t threads[MAX_CONCURRENCY];
     ConcurrencyWorkerData thread_data[MAX_CONCURRENCY];
@@ -85,28 +84,30 @@ int main() {
         sleep(2*UPDATE_TIME);
 
         // Ask user if they want to continue changing values
-        printf("Downloaded Queue Size: %d\n", queue_size(files_downloaded));
+        queue_size_num = queue_size(files_downloaded);
+        printf("Downloaded Queue Size: %d\n", queue_size_num);
         printf("Do you want to continue changing values? (y/n): ");
         scanf(" %c", &continueInput); // Note the space before %c to consume any leftover '\n' from the previous input
 
-        if (queue_size(files_downloaded)>= MAX_FILE_NUMBER){
+        if (queue_size_num>= MAX_FILE_NUMBER){
             break;
         }
 
     } while(continueInput != 'n');
     print_queue_data_generator_ids(files_downloaded);
-    fprintf(logFile,"Main Thread change parallelism to MAX and concurrency to MAX\n");
-    pthread_mutex_unlock(&logMutex);
+    // fprintf(logFile,"Main Thread change parallelism to MAX and concurrency to MAX\n");
+    // pthread_mutex_unlock(&logMutex);
     for (int i = 0; i < MAX_CONCURRENCY; i++) {
         set_parallel_value(&thread_data[i], MAX_PARALLELISM);
     }
     set_concurrent_value(MAX_CONCURRENCY);
     sleep(2*UPDATE_TIME);
-    pthread_mutex_lock(&logMutex);
+    // pthread_mutex_lock(&logMutex);
     // printf("Main thread is shutting off all concurrent threads\n");
-    fprintf(logFile,"Main thread is shutting off all concurrent threads\n");
-    pthread_mutex_unlock(&logMutex);
+    // fprintf(logFile,"Main thread is shutting off all concurrent threads\n");
+    // pthread_mutex_unlock(&logMutex);
     for(int i = 0; i < MAX_CONCURRENCY; i++) {
+        printf("Main thread is shutting off concurrent thread %d\n", i);
         thread_data[i].active = 0;
     }
 
@@ -116,12 +117,13 @@ int main() {
         pthread_cond_destroy(&thread_data[i].pause_cond);
         pthread_mutex_destroy(&thread_data[i].parallel_value_mutex);
     }
-    pthread_mutex_destroy(&concurrency_mutex);
-    // printf("All done\n");
-    pthread_mutex_lock(&logMutex);
-    fprintf(logFile,"All done\n");
-    pthread_mutex_unlock(&logMutex);
+
+    printf("All done\n");
+    // pthread_mutex_lock(&logMutex);
+    // fprintf(logFile,"All done\n");
+    // pthread_mutex_unlock(&logMutex);
     fclose(logFile);
+    pthread_mutex_destroy(&concurrency_mutex);
     pthread_mutex_destroy(&logMutex);
     curl_global_cleanup();
     queue_destroy(files_need_to_be_downloaded);
