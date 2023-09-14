@@ -25,6 +25,9 @@ void queue_destroy(Queue* queue) {
 }
 
 void queue_push(Queue* queue, void* data) {
+    if (data == NULL) {
+        return;
+    }
     Node* new_node = malloc(sizeof(Node));
     new_node->data = data;
     new_node->next = NULL;

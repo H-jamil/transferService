@@ -63,6 +63,9 @@ void data_generator_free(DataGenerator *gen) {
 }
 
 bool is_finished(DataGenerator *gen){
+    if (gen == NULL) {
+        return true;
+    }
     pthread_mutex_lock(&gen->mutex_generator_finished);
     bool finished = (gen->finished == 1);
     pthread_mutex_unlock(&gen->mutex_generator_finished);

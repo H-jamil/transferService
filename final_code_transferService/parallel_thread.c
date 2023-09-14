@@ -1,8 +1,12 @@
 #include "thread.h"
 #include "data_generator.h"
+#include <stdbool.h>
+#include <stdatomic.h>
 extern FILE* logFile;
 extern pthread_mutex_t logMutex;
-
+extern int current_parallelism;
+extern pthread_mutex_t parallelism_mutex;
+extern atomic_int downloaded_chunks;
 
 void adjust_parallel_workers(ParallelWorkerData* thread_data, int active_parallel_value) {
     for(int i = 0; i < active_parallel_value; i++) {
@@ -13,16 +17,30 @@ void adjust_parallel_workers(ParallelWorkerData* thread_data, int active_paralle
     }
 }
 
-void set_parallel_value(ConcurrencyWorkerData* data, int value) {
-    pthread_mutex_lock(&data->parallel_value_mutex);
-    data->parallel_value = value;
-    pthread_mutex_unlock(&data->parallel_value_mutex);
+// void set_parallel_value(ConcurrencyWorkerData* data, int value) {
+//     pthread_mutex_lock(&data->parallel_value_mutex);
+//     data->parallel_value = value;
+//     pthread_mutex_unlock(&data->parallel_value_mutex);
+// }
+
+// int get_parallel_value(ConcurrencyWorkerData* data) {
+//     pthread_mutex_lock(&data->parallel_value_mutex);
+//     int value = data->parallel_value;
+//     pthread_mutex_unlock(&data->parallel_value_mutex);
+//     return value;
+// }
+
+void set_parallel_value(int value) {
+    pthread_mutex_lock(&parallelism_mutex);
+    current_parallelism = value;
+    pthread_mutex_unlock(&parallelism_mutex);
 }
 
-int get_parallel_value(ConcurrencyWorkerData* data) {
-    pthread_mutex_lock(&data->parallel_value_mutex);
-    int value = data->parallel_value;
-    pthread_mutex_unlock(&data->parallel_value_mutex);
+
+int get_parallel_value() {
+    pthread_mutex_lock(&parallelism_mutex);
+    int value = current_parallelism;
+    pthread_mutex_unlock(&parallelism_mutex);
     return value;
 }
 
@@ -92,6 +110,7 @@ void* ParallelThreadFunc(void* arg) {
 
             if((chunk = data_generator_next(data->data_generator))!=NULL){
                 download_part(chunk);
+                atomic_fetch_add(&downloaded_chunks, 1);
             }
             else{
                 break;

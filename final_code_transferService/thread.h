@@ -31,8 +31,6 @@ typedef struct ConcurrencyWorkerData{
     pthread_mutex_t pause_mutex;
     pthread_cond_t pause_cond;
     int paused;
-    int parallel_value;
-    // char *file_name;
     Queue *files_need_to_be_downloaded;
     Queue *files_downloaded;
     int chunk_size;
@@ -42,8 +40,8 @@ typedef struct ConcurrencyWorkerData{
 } ConcurrencyWorkerData;
 
 void adjust_parallel_workers(ParallelWorkerData* thread_data, int active_parallel_value);
-void set_parallel_value(ConcurrencyWorkerData* data, int value);
-int get_parallel_value(ConcurrencyWorkerData* data);
+void set_parallel_value(int value);
+int get_parallel_value();
 void pause_parallel_worker(ParallelWorkerData* data);
 void resume_parallel_worker(ParallelWorkerData* data);
 size_t write_callback_parallel(char *ptr, size_t size, size_t nmemb, void *userdata);

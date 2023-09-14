@@ -2,6 +2,8 @@
 #include <string.h>
 extern int current_concurrency;
 extern pthread_mutex_t concurrency_mutex;
+extern int current_parallelism;
+extern pthread_mutex_t parallelism_mutex;
 
 extern FILE* logFile;
 extern pthread_mutex_t logMutex;
@@ -45,7 +47,7 @@ void resume_concurrency_worker(ConcurrencyWorkerData* data) {
         pthread_cond_signal(&data->pause_cond);
     }
     pthread_mutex_unlock(&data->pause_mutex);
-    int active_parallel_value = get_parallel_value(data);
+    int active_parallel_value = get_parallel_value();
     adjust_parallel_workers(data->thread_data, active_parallel_value);
 }
 
@@ -114,6 +116,7 @@ void* ConcurrencyThreadFunc(void* arg) {
         pthread_mutex_lock(&concurrency_mutex);
         if (data->id >= current_concurrency) {
             queue_push(data->files_need_to_be_downloaded,gen);
+            gen = NULL;
             pthread_mutex_unlock(&concurrency_mutex);
             pause_concurrency_worker(data);
             sleep(UPDATE_TIME);
@@ -137,7 +140,7 @@ void* ConcurrencyThreadFunc(void* arg) {
             data->thread_data = thread_data;
         }
         resume_concurrency_worker(data);
-        active_parallel_value = get_parallel_value(data);
+        active_parallel_value = get_parallel_value();
         if (active_parallel_value != old_active_parallel_value) {
             adjust_parallel_workers(thread_data, active_parallel_value);
             old_active_parallel_value = active_parallel_value;
