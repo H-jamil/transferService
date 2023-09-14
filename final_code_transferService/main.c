@@ -5,6 +5,10 @@
 #include <stdatomic.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <string.h> // for memset
+#include <unistd.h> // for close()
 
 int current_concurrency = 0;
 pthread_mutex_t concurrency_mutex;
@@ -12,8 +16,11 @@ FILE* logFile;
 pthread_mutex_t logMutex;
 int current_parallelism = 0;
 pthread_mutex_t parallelism_mutex;
+
 #define CHUNK_SIZE 5000000
 #define MAX_FILE_NUMBER 8
+#define PORT 8080
+
 atomic_int downloaded_chunks;
 
 
@@ -90,9 +97,11 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+    char termination_msg[] = "TERMINATE\0";
+    char ok_msg[] = "OK\0";
     char *ip_address = argv[1];
     int user_parallelism, user_concurrency;
-    char continueInput = 'y';
+    // char continueInput = 'y';
     atomic_init(&downloaded_chunks, 0); // Initialize size to 0
     pthread_t threads[MAX_CONCURRENCY];
     ConcurrencyWorkerData thread_data[MAX_CONCURRENCY];
@@ -119,6 +128,42 @@ int main(int argc, char *argv[]) {
     Queue *generator_queue=get_generator_queue(files_need_to_be_downloaded,CHUNK_SIZE);
     Queue *generator_queue_with_data_chunks=get_generator_queue_with_data_chunks(files_downloaded,CHUNK_SIZE);
 
+    /*
+    //server initialization for python client to connect
+    */
+    int server_fd, new_socket;
+    struct sockaddr_in address;
+    int opt = 1;
+    int addrlen = sizeof(address);
+    char buffer[1024] = {0};
+
+    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+        perror("Socket creation failed");
+        exit(EXIT_FAILURE);
+    }
+
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
+        perror("Setsockopt error");
+        exit(EXIT_FAILURE);
+    }
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons(PORT);
+
+    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
+        perror("Bind failed");
+        exit(EXIT_FAILURE);
+    }
+    if (listen(server_fd, 3) < 0) {
+        perror("Listen failed");
+        exit(EXIT_FAILURE);
+    }
+    if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen)) < 0) {
+        perror("Accept failed");
+        exit(EXIT_FAILURE);
+    }
+
+
     monitor_args args;
     pthread_t monitor_tid;
     args.downloaded_chunks = &downloaded_chunks;
@@ -142,28 +187,37 @@ int main(int argc, char *argv[]) {
         pthread_mutex_init(&thread_data[i].parallel_value_mutex, NULL);
         pthread_create(&threads[i], NULL, ConcurrencyThreadFunc, &thread_data[i]);
     }
+    int continueReceiving = 1;
     do {
-        // Prompt user to enter values
-        printf("Enter parallelism value (1 to MAX_PARALLELISM): ");
-        scanf("%d", &user_parallelism);
-
-        printf("Enter concurrency value (1 to MAX_CONCURRENCY): ");
-        scanf("%d", &user_concurrency);
-
-        pthread_mutex_lock(&logMutex);
-        fprintf(logFile, "Main Thread changed parallelism to %d and concurrency to %d\n", user_parallelism, user_concurrency);
-        pthread_mutex_unlock(&logMutex);
-
-        set_parallel_value(user_parallelism);
-        set_concurrent_value(user_concurrency);
-        sleep(2*UPDATE_TIME);
-        printf("Do you want to continue changing values? (y/n): ");
-        scanf(" %c", &continueInput); // Note the space before %c to consume any leftover '\n' from the previous input
-        if (atomic_load(&args.job_done)) {
+        memset(buffer, 0, sizeof(buffer));
+        int bytesReceived = recv(new_socket, buffer, sizeof(buffer), 0);
+        if (bytesReceived <= 0) {
+            printf("Error: Received no data from Python client or connection was closed.\n");
+            continueReceiving = 0;
             break;
         }
 
-    } while(continueInput != 'n');
+        if(sscanf(buffer, "%d %d", &user_parallelism, &user_concurrency) != 2) {
+            printf("Error: Failed to parse received data.\n");
+            continueReceiving = 0;
+            break;
+        }
+        if (atomic_load(&args.job_done)) {
+            send(new_socket, termination_msg, sizeof(termination_msg), 0);
+            break;
+        }
+        else{
+            send(new_socket, ok_msg, sizeof(ok_msg), 0);
+        }
+        // Prompt user to enter values
+        pthread_mutex_lock(&logMutex);
+        fprintf(logFile, "Main Thread changed parallelism to %d and concurrency to %d\n", user_parallelism, user_concurrency);
+        pthread_mutex_unlock(&logMutex);
+        set_parallel_value(user_parallelism);
+        set_concurrent_value(user_concurrency);
+        sleep(2*UPDATE_TIME);
+
+    } while(continueReceiving);
 
     printf("Main Thread change parallelism to MAX and concurrency to MAX\n");
 
@@ -187,6 +241,8 @@ int main(int argc, char *argv[]) {
     fclose(logFile);
     pthread_mutex_destroy(&logMutex);
     curl_global_cleanup();
+    close(new_socket);
+    close(server_fd);
     queue_destroy(files_need_to_be_downloaded);
     queue_destroy(files_downloaded);
     queue_destroy(generator_queue);
