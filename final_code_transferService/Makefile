@@ -16,7 +16,7 @@ EXECUTABLE = parallel_concurrent
 all: $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJ)
-	$(CC) $(CFLAGS) -o $@ $^ -lpthread -lcurl
+	$(CC) $(CFLAGS) -o $@ $^ -lpthread -lcurl -lzmq
 	rm -f $(OBJ)
 
 .c.o:
