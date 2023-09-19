@@ -15,10 +15,13 @@ fi
 
 # Extract the current date and time for naming log file
 current_time=$(date +"%Y%m%d_%H%M%S")
-fileName="./${1}_${2}.log"
+fileName="./P${1}_C${2}.log"
+# fileName="./P${1}_C${2}.log"
 
-./parallel_concurrent 128.205.218.120 ./logFileDir/${1}_${2}_${current_time}.log >>$fileName &
+./parallel_concurrent 192.5.87.228 ./logFileDir/${1}_${2}_${current_time}.log >>$fileName &
 # Wait a bit for the C program to start up
-sleep 0.01
-/home/jamilm/.pyenv/shims/python client.py $1 $2
+sleep 1
+/home/cc/.pyenv/shims/python client.py $1 $2
+sleep 10
+pkill -f parallel_concurrent
 rm FILE*

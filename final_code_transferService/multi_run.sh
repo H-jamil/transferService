@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Define the arrays for run_no, parallelism_values, and concurrency_values
-run_no=(1)
-parallelism_values=(1 2)
-concurrency_values=(1 2)
+run_no=(1 2 3)
+parallelism_values=(1 2 4 8)
+concurrency_values=(1 2 4 8)
 
 # Iterate over the arrays
 for run in "${run_no[@]}"; do

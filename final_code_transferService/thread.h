@@ -6,13 +6,14 @@
 #include <pthread.h>
 #include <time.h>
 #include <curl/curl.h>
-#include "/home/jamilm/libzmq/include/zmq.h"
+// #include "/home/jamilm/libzmq/include/zmq.h"
+#include <zmq.h>
 #include "data_generator.h"
 #include "queue.h"
 
 
-#define MAX_CONCURRENCY 4
-#define MAX_PARALLELISM 4
+#define MAX_CONCURRENCY 8
+#define MAX_PARALLELISM 8
 #define UPDATE_TIME 3
 
 typedef struct ParallelWorkerData{

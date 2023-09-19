@@ -3,6 +3,8 @@
 
 #include <stdlib.h>
 #include <pthread.h>
+#include <stdbool.h>
+#include <stdatomic.h>
 
 typedef struct Node {
     void* data;
@@ -14,7 +16,7 @@ typedef struct Queue {
     Node* rear;
     pthread_mutex_t lock;
     pthread_cond_t cond;
-    int size;
+    atomic_int size;
 } Queue;
 
 Queue* queue_create();

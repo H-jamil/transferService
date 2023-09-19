@@ -8,7 +8,8 @@ Queue* queue_create() {
     queue->rear = NULL;
     pthread_mutex_init(&(queue->lock), NULL);
     pthread_cond_init(&(queue->cond), NULL);
-    queue->size = 0;
+    // queue->size = 0;
+    atomic_init(&queue->size, 0); // Initialize size to 0
     return queue;
 }
 
@@ -40,7 +41,8 @@ void queue_push(Queue* queue, void* data) {
         queue->front = new_node;
         queue->rear = new_node;
     }
-    queue->size++;
+    // queue->size++;
+    atomic_fetch_add(&queue->size, 1); // Increment size atomically
     pthread_cond_signal(&(queue->cond));
     pthread_mutex_unlock(&(queue->lock));
 }
@@ -57,15 +59,17 @@ void* queue_pop(Queue* queue) {
     if (queue->front == NULL) {
         queue->rear = NULL;
     }
-    queue->size--;
+    // queue->size--;
+    atomic_fetch_sub(&queue->size, 1); // Decrement size atomically
     pthread_mutex_unlock(&(queue->lock));
     free(front_node);
     return data;
 }
 
 int queue_size(Queue* queue) {
-    pthread_mutex_lock(&(queue->lock));
-    int size = queue->size;
-    pthread_mutex_unlock(&(queue->lock));
-    return size;
+    // pthread_mutex_lock(&(queue->lock));
+    // int size = queue->size;
+    // pthread_mutex_unlock(&(queue->lock));
+    // return size;
+    return atomic_load(&queue->size);
 }

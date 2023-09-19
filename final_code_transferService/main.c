@@ -6,8 +6,11 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/socket.h>
-#include "/home/jamilm/libzmq/include/zmq.h"
+// #include "/home/jamilm/libzmq/include/zmq.h"
+#include <zmq.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
+
 #include <string.h> // for memset
 #include <unistd.h> // for close()
 
@@ -21,7 +24,7 @@ double total_energy_used = 0;
 int monitoring_active = 1;
 
 
-#define CHUNK_SIZE 5000000
+#define CHUNK_SIZE 40000000
 #define MAX_FILE_NUMBER 8
 #define PORT 8080
 
@@ -60,13 +63,14 @@ void* monitor_thread(void* arg) {
 }
 
 void* energy_monitor_thread(void* arg) {
-    double energy_start, energy_end;
+    double energy_now, energy_old;
+    double energy=0;
     FILE* file = fopen("/sys/class/powercap/intel-rapl:0/energy_uj", "r");
     if (!file) {
         perror("Failed to open energy_uj file");
         return NULL;
     }
-    fscanf(file, "%lf", &energy_start);
+    fscanf(file, "%lf", &energy_old);
     fclose(file);
     // Loop until signaled to stop
     while(1) {
@@ -74,11 +78,20 @@ void* energy_monitor_thread(void* arg) {
             break;
         }
         sleep(1); // Sleep for a bit before re-checking the condition
+        file = fopen("/sys/class/powercap/intel-rapl:0/energy_uj", "r");
+        if (!file) {
+            perror("Failed to open energy_uj file");
+            return NULL;
+        }
+        fscanf(file, "%lf", &energy_now);
+        fclose(file);
+        energy+=energy_now-energy_old;
+        energy_old=energy_now;
     }
-    file = fopen("/sys/class/powercap/intel-rapl:0/energy_uj", "r");
-    fscanf(file, "%lf", &energy_end);
-    fclose(file);
-    total_energy_used = (energy_end - energy_start) / 1000000.0;  // Convert uJ to J
+    // file = fopen("/sys/class/powercap/intel-rapl:0/energy_uj", "r");
+    // fscanf(file, "%lf", &energy_end);
+    // fclose(file);
+    total_energy_used = energy / 1000000.0;  // Convert uJ to J
     return NULL;
 }
 
@@ -182,7 +195,8 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
     address.sin_family = AF_INET;
-    address.sin_addr.s_addr = INADDR_ANY;
+    // address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_addr.s_addr = inet_addr("10.52.1.91");
     address.sin_port = htons(PORT);
 
     if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {

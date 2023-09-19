@@ -20,7 +20,8 @@ def main():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
-        s.connect(('127.0.0.1', 8080))
+        # s.connect(('127.0.0.1', 8080))
+        s.connect(('10.52.1.91', 8080))
     except socket.error as e:
         print(f"Failed to connect: {e}")
         return
