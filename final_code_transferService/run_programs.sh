@@ -20,8 +20,8 @@ fileName="./P${1}_C${2}.log"
 
 ./parallel_concurrent 192.5.87.228 ./logFileDir/${1}_${2}_${current_time}.log >>$fileName &
 # Wait a bit for the C program to start up
-sleep 1
+sleep 3
 /home/cc/.pyenv/shims/python client.py $1 $2
-sleep 10
+sleep 2
 pkill -f parallel_concurrent
 rm FILE*

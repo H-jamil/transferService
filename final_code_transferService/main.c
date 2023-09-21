@@ -25,7 +25,7 @@ int monitoring_active = 1;
 
 
 #define CHUNK_SIZE 40000000
-#define MAX_FILE_NUMBER 8
+#define MAX_FILE_NUMBER 16
 #define PORT 8080
 
 atomic_int downloaded_chunks;
@@ -254,7 +254,6 @@ int main(int argc, char *argv[]) {
             break;
         }
         if (atomic_load(&args.job_done)) {
-            send(new_socket, termination_msg, sizeof(termination_msg), 0);
             elapsed = zmq_stopwatch_stop (watch);
             break;
         }
@@ -300,6 +299,7 @@ int main(int argc, char *argv[]) {
     printf("Total energy used: %lf Joules\n", total_energy_used);
     printf ("mean Network throughput: %d [msg/s]\n", (int) throughput);
     printf ("mean Network throughput: %.3f [Mb/s]\n", (double) megabits);
+    send(new_socket, termination_msg, sizeof(termination_msg), 0);
 
     fclose(logFile);
     pthread_mutex_destroy(&logMutex);

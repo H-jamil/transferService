@@ -2,7 +2,7 @@
 CC = gcc
 
 # Compiler Flags
-CFLAGS = -Wall
+CFLAGS = -Wall -g
 
 # Sources
 SOURCES = main.c concurrent_thread.c parallel_thread.c data_generator.c queue.c

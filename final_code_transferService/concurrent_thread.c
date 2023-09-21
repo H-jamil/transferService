@@ -71,12 +71,12 @@ double get_file_size_from_url(const char *url) {
     return file_size;
 }
 
-Queue* get_generator_queue(Queue *files_need_to_be_downloaded, int CHUNK_SIZE){
+Queue* get_generator_queue(Queue *files_need_to_be_downloaded, int chunk_size){
     Queue *generator_queue=queue_create();
     while(queue_size(files_need_to_be_downloaded)>0){
         char *file_url=queue_pop(files_need_to_be_downloaded);
         double size_of_file=get_file_size_from_url(file_url);
-        DataGenerator *gen = data_generator_init(file_url, extract_filename(file_url), size_of_file,CHUNK_SIZE);
+        DataGenerator *gen = data_generator_init(file_url, extract_filename(file_url), size_of_file,chunk_size);
         queue_push(generator_queue,gen);
     }
     return generator_queue;

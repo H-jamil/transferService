@@ -12,8 +12,8 @@
 #include "queue.h"
 
 
-#define MAX_CONCURRENCY 8
-#define MAX_PARALLELISM 8
+#define MAX_CONCURRENCY 17
+#define MAX_PARALLELISM 17
 #define UPDATE_TIME 3
 
 typedef struct ParallelWorkerData{
