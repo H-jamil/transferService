@@ -24,7 +24,7 @@ double total_energy_used = 0;
 int monitoring_active = 1;
 
 
-#define CHUNK_SIZE 40000000
+#define CHUNK_SIZE 10000000
 #define MAX_FILE_NUMBER 16
 #define PORT 8080
 

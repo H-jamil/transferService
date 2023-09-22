@@ -107,14 +107,13 @@ void* ParallelThreadFunc(void* arg) {
         struct timespec start, current;
         clock_gettime(CLOCK_MONOTONIC, &start);
         do {
-
             if((chunk = data_generator_next(data->data_generator))!=NULL){
-                download_part(chunk);
-                atomic_fetch_add(&downloaded_chunks, 1);
+                    download_part(chunk);
+                    atomic_fetch_add(&downloaded_chunks, 1);
             }
             else{
                 break;
-            }
+                }
             time(&now);
             // pthread_mutex_lock(&logMutex);
             // fprintf(logFile,"Parent ID : %d thread ID: %d, file name: %s , start_byte :%ld \n", data->parent_id, data->id, chunk->output_file, chunk->start_byte);

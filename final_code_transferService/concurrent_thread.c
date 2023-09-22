@@ -77,6 +77,9 @@ Queue* get_generator_queue(Queue *files_need_to_be_downloaded, int chunk_size){
         char *file_url=queue_pop(files_need_to_be_downloaded);
         double size_of_file=get_file_size_from_url(file_url);
         DataGenerator *gen = data_generator_init(file_url, extract_filename(file_url), size_of_file,chunk_size);
+        pthread_mutex_lock(&logMutex);
+        fprintf(logFile, "Gen address: %p\n", gen);
+        pthread_mutex_unlock(&logMutex);
         queue_push(generator_queue,gen);
     }
     return generator_queue;
@@ -95,6 +98,15 @@ void* ConcurrencyThreadFunc(void* arg) {
         pthread_mutex_unlock(&logMutex);
         return NULL;
     }
+
+    // 0x562a6a700000 : real
+    // 0x555555500000 : gdb
+    // uintptr_t myConst = (uintptr_t)0x555555500000;
+    // uintptr_t myMask = (uintptr_t)0xFFFFFFF00000;
+    // if (((uintptr_t) gen & myMask) != myConst) {
+    //     printf("Gen address goofed: %p\n", gen);
+    // }
+
     for(int i = 0; i < MAX_PARALLELISM; i++) {
         thread_data[i].id = i;
         thread_data[i].active = 1;
@@ -124,7 +136,7 @@ void* ConcurrencyThreadFunc(void* arg) {
         }
         pthread_mutex_unlock(&concurrency_mutex);
         if (is_finished(gen)) {
-            queue_push(data->files_downloaded, gen); // Add this line to push the finished generator
+            // queue_push(data->files_downloaded, gen); // Add this line to push the finished generator
             if ((gen= queue_pop(data->files_need_to_be_downloaded)) == NULL) {
                 pthread_mutex_lock(&logMutex);
                 fprintf(logFile, "Concurrent Thread %d shutting down because there are no files to download\n", data->id);
@@ -134,6 +146,7 @@ void* ConcurrencyThreadFunc(void* arg) {
                 }
                 return NULL;
             }
+
             for(int i = 0; i < MAX_PARALLELISM; i++) {
             thread_data[i].data_generator = gen;
             }

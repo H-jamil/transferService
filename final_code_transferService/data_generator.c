@@ -16,9 +16,9 @@ DataGenerator* data_generator_init(char *url, char *o_file, size_t dataSize, siz
     gen->current_call_number = 0;
     gen->finished = 0;
     // Initialize mutexes
-    pthread_mutex_init(&gen->mutex_generator, NULL);
-    pthread_mutex_init(&gen->mutex_outfile_file, NULL);
-    pthread_mutex_init(&gen->mutex_generator_finished, NULL);
+    pthread_mutex_init(&(gen->mutex_generator), NULL);
+    pthread_mutex_init(&(gen->mutex_outfile_file), NULL);
+    pthread_mutex_init(&(gen->mutex_generator_finished), NULL);
     return gen;
 }
 
@@ -27,15 +27,15 @@ parallel_work_data* data_generator_next(DataGenerator *gen) {
     if (gen == NULL){
         return NULL;
     }
-    pthread_mutex_lock(&gen->mutex_generator);
+    pthread_mutex_lock(&(gen->mutex_generator));
     if (gen->currentIndex >= gen->dataSize) {
         gen->finished = 1;
-        pthread_mutex_unlock(&gen->mutex_generator);
+        pthread_mutex_unlock(&(gen->mutex_generator));
         return NULL; // No more chunks to process
     }
     parallel_work_data *work_data = malloc(sizeof(parallel_work_data));
     if (!work_data) {
-        pthread_mutex_unlock(&gen->mutex_generator);
+        pthread_mutex_unlock(&(gen->mutex_generator));
         return NULL; // Allocation failed
     }
 
@@ -52,7 +52,7 @@ parallel_work_data* data_generator_next(DataGenerator *gen) {
 
     gen->currentIndex += gen->chunk_size;
     gen->current_call_number++;
-    pthread_mutex_unlock(&gen->mutex_generator);
+    pthread_mutex_unlock(&(gen->mutex_generator));
     return work_data;
 }
 
@@ -60,9 +60,9 @@ parallel_work_data* data_generator_next(DataGenerator *gen) {
 void data_generator_free(DataGenerator *gen) {
     free(gen->url);
     free(gen->output_file);
-    pthread_mutex_destroy(&gen->mutex_generator);
-    pthread_mutex_destroy(&gen->mutex_outfile_file);
-    pthread_mutex_destroy(&gen->mutex_generator_finished);
+    pthread_mutex_destroy(&(gen->mutex_generator));
+    pthread_mutex_destroy(&(gen->mutex_outfile_file));
+    pthread_mutex_destroy(&(gen->mutex_generator_finished));
     free(gen);
 }
 
@@ -70,8 +70,8 @@ bool is_finished(DataGenerator *gen){
     if (gen == NULL) {
         return true;
     }
-    pthread_mutex_lock(&gen->mutex_generator_finished);
+    pthread_mutex_lock(&(gen->mutex_generator_finished));
     bool finished = (gen->finished == 1);
-    pthread_mutex_unlock(&gen->mutex_generator_finished);
+    pthread_mutex_unlock(&(gen->mutex_generator_finished));
     return finished;
 }
