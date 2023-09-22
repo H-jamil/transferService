@@ -2,11 +2,14 @@
 #include "data_generator.h"
 #include <stdbool.h>
 #include <stdatomic.h>
+#include "hash_table.h"
 extern FILE* logFile;
 extern pthread_mutex_t logMutex;
 extern int current_parallelism;
 extern pthread_mutex_t parallelism_mutex;
 extern atomic_int downloaded_chunks;
+
+extern HashTable *dataGenTable;
 
 void adjust_parallel_workers(ParallelWorkerData* thread_data, int active_parallel_value) {
     for(int i = 0; i < active_parallel_value; i++) {
@@ -107,6 +110,7 @@ void* ParallelThreadFunc(void* arg) {
         struct timespec start, current;
         clock_gettime(CLOCK_MONOTONIC, &start);
         do {
+         if (hash_table_contains(dataGenTable, data->data_generator)){
             if((chunk = data_generator_next(data->data_generator))!=NULL){
                     download_part(chunk);
                     atomic_fetch_add(&downloaded_chunks, 1);
@@ -114,6 +118,10 @@ void* ParallelThreadFunc(void* arg) {
             else{
                 break;
                 }
+         }
+         else{
+            break;
+         }
             time(&now);
             // pthread_mutex_lock(&logMutex);
             // fprintf(logFile,"Parent ID : %d thread ID: %d, file name: %s , start_byte :%ld \n", data->parent_id, data->id, chunk->output_file, chunk->start_byte);

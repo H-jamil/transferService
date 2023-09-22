@@ -5,7 +5,7 @@ CC = gcc
 CFLAGS = -Wall -g
 
 # Sources
-SOURCES = main.c concurrent_thread.c parallel_thread.c data_generator.c queue.c
+SOURCES = main.c concurrent_thread.c parallel_thread.c data_generator.c queue.c hash_table.c
 
 # Object Files
 OBJ = $(SOURCES:.c=.o)

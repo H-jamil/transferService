@@ -1,5 +1,6 @@
 #include "thread.h"
 #include <string.h>
+#include "hash_table.h"
 extern int current_concurrency;
 extern pthread_mutex_t concurrency_mutex;
 extern int current_parallelism;
@@ -8,6 +9,7 @@ extern pthread_mutex_t parallelism_mutex;
 extern FILE* logFile;
 extern pthread_mutex_t logMutex;
 
+extern HashTable *dataGenTable;
 
 char* extract_filename(const char* url) {
     char *last_slash = strrchr(url, '/');
@@ -80,6 +82,7 @@ Queue* get_generator_queue(Queue *files_need_to_be_downloaded, int chunk_size){
         pthread_mutex_lock(&logMutex);
         fprintf(logFile, "Gen address: %p\n", gen);
         pthread_mutex_unlock(&logMutex);
+        hash_table_add(dataGenTable, gen);
         queue_push(generator_queue,gen);
     }
     return generator_queue;

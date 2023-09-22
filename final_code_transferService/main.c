@@ -10,7 +10,7 @@
 #include <zmq.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-
+#include "hash_table.h"
 #include <string.h> // for memset
 #include <unistd.h> // for close()
 
@@ -22,9 +22,10 @@ int current_parallelism = 0;
 pthread_mutex_t parallelism_mutex;
 double total_energy_used = 0;
 int monitoring_active = 1;
+HashTable *dataGenTable = NULL;
 
 
-#define CHUNK_SIZE 10000000
+#define CHUNK_SIZE 40000000
 #define MAX_FILE_NUMBER 16
 #define PORT 8080
 
@@ -137,7 +138,9 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "Usage: %s <IP_ADDRESS> <LOG_FILE>\n", argv[0]);
         return 1;
     }
-
+    if (dataGenTable == NULL) {
+        dataGenTable = hash_table_create(MAX_FILE_NUMBER);
+    }
     char termination_msg[] = "TERMINATE\0";
     char ok_msg[] = "OK\0";
     char *ip_address = argv[1];
@@ -175,10 +178,26 @@ int main(int argc, char *argv[]) {
 
     Queue *generator_queue=get_generator_queue(files_need_to_be_downloaded,CHUNK_SIZE);
     Queue *generator_queue_with_data_chunks=get_generator_queue_with_data_chunks(files_downloaded,CHUNK_SIZE);
+    // hash_table_print_pointers(dataGenTable);
+    // DataGenerator *gen;
+    // while(queue_size(generator_queue)>0)
+    // {
+    //       gen=queue_pop(generator_queue);
+    //       if(hash_table_contains(dataGenTable, gen))
+    //       {
+    //         printf("Gen address: %p found in hashTable\n", gen);
+    //       }
+    //         else
+    //         {
+    //             printf("Gen address: %p not found in hashTable\n", gen);
+    //         }
+    // }
+
 
     /*
     //server initialization for python client to connect
     */
+
     int server_fd, new_socket;
     struct sockaddr_in address;
     int opt = 1;
