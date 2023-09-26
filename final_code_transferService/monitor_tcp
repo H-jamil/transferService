@@ -1,0 +1,41 @@
+#!/bin/bash
+
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $0 <pid> <port>"
+    exit 1
+fi
+
+PID=$1
+PORT=$2
+LOGFILE="tcp_monitor_$PID.log"
+
+# Cleanup function
+cleanup() {
+    echo "Cleaning up..."
+    # Add cleanup actions here, e.g., remove temporary files
+    exit
+}
+
+trap cleanup EXIT  # Execute cleanup on script exit
+
+# Function to compute and log throughput
+log_throughput() {
+    # This is a basic version using ss's Recv-Q and Send-Q values.
+    # For more accurate measurement, consider packet capture analysis.
+    local send_q=$(echo "$1" | awk '{print $2}')
+    local recv_q=$(echo "$1" | awk '{print $3}')
+    echo "$(date +%s),Send-Q:$send_q,Recv-Q:$recv_q" >> $LOGFILE
+}
+
+# Main loop
+while true; do
+    # Extract statistics for the given PID and port
+    STATS=$(ss -tin "dport = :$PORT" | grep "pid=$PID,")
+
+    # Log data
+    log_throughput "$STATS"
+
+    # Here, add functions to compute and log other metrics, such as RTT and packet loss
+
+    sleep 1
+done
