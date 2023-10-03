@@ -26,7 +26,7 @@ HashTable *dataGenTable = NULL;
 
 
 #define CHUNK_SIZE 40000000
-#define MAX_FILE_NUMBER 16
+#define MAX_FILE_NUMBER 32
 #define PORT 8080
 
 atomic_int downloaded_chunks;

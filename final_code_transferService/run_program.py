@@ -172,7 +172,7 @@ def run_programs(parallelism, concurrency):
         process = subprocess.Popen(["./parallel_concurrent", REMOTE_IP, log_file_path],
                                    stdout=file, stderr=file)
         # Start the watchdog timer
-        watchdog = WatchdogTimer(500, lambda: kill_process(process))
+        watchdog = WatchdogTimer(1000, lambda: kill_process(process))
         watchdog.reset()
         # monitor_process = subprocess.Popen(["./monitor_tcp", str(process.pid),"80"])
         time.sleep(1)
