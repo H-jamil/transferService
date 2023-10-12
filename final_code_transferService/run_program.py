@@ -11,7 +11,7 @@ import random
 import sys
 import numpy as np
 import re
-import pandas as pd
+# import pandas as pd
 
 REMOTE_IP = "192.5.87.228"
 REMOTE_PORT = "80"
@@ -246,9 +246,9 @@ if __name__ == "__main__":
                 print(f"Running: Run Number={run}, Parallelism={parallelism}, Concurrency={concurrency}")
                 run_programs(parallelism, concurrency)
                 columns = ["Throughput", "Parallelism", "Concurrency", "LossRate", "Score", "rtt", "energy", "Time"]
-                df = pd.DataFrame(list(throughput_logs), columns=columns)
+                # df = pd.DataFrame(list(throughput_logs), columns=columns)
                 write_header = not os.path.exists(file_name)
-                df.to_csv(file_name, mode='a', header=write_header, index=False)
+                # df.to_csv(file_name, mode='a', header=write_header, index=False)
                 throughput_logs[:] = []
                 time.sleep(2)
 

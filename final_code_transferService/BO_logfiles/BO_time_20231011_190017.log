@@ -1,0 +1,7 @@
+From Main : Total 800 chunks will be downloaded
+Main Thread change parallelism to MAX and concurrency to MAX
+Main thread is shutting off all concurrent threads
+All done
+Total energy used: 6094.259606 Joules
+mean Network throughput: 11 [msg/s]
+mean Network throughput: 3555.443 [Mb/s]
