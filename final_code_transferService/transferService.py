@@ -73,21 +73,21 @@ class transferService:
       self.runtime_status=Value('i', 0)
       self.monitor_thread = None
       self.run_program_thread = None
-      self.speed_calculator = None
+      # self.speed_calculator = None
       self.rtt_calculator_process = None
-      self.energy_process = None
+      # self.energy_process = None
 
 
 
-    def calculate_download_speed(self):
-      prev_rx = psutil.net_io_counters(pernic=True)[self.INTERFACE].bytes_recv
-      while True:
-          time.sleep(1)
-          current_rx = psutil.net_io_counters(pernic=True)[self.INTERFACE].bytes_recv
-          speed_bps = current_rx - prev_rx
-          # self.speed_mbps.value = (speed_bps * 8) / 1_000_000  # 8 bits per byte and 1e6 bits in a Mbps
-          # print(f"Download Speed: {speed_mbps:.2f} Mbps")
-          prev_rx = current_rx
+    # def calculate_download_speed(self):
+    #   prev_rx = psutil.net_io_counters(pernic=True)[self.INTERFACE].bytes_recv
+    #   while True:
+    #       time.sleep(1)
+    #       current_rx = psutil.net_io_counters(pernic=True)[self.INTERFACE].bytes_recv
+    #       speed_bps = current_rx - prev_rx
+    #       # self.speed_mbps.value = (speed_bps * 8) / 1_000_000  # 8 bits per byte and 1e6 bits in a Mbps
+    #       # print(f"Download Speed: {speed_mbps:.2f} Mbps")
+    #       prev_rx = current_rx
 
     def rtt_calculator(self):
       while True:
@@ -103,23 +103,23 @@ class transferService:
             print(f"Failed to ping {self.REMOTE_IP}")
             self.rtt_ms.value = 0.0
 
-    def get_energy_consumption(self):
-      while True:
-        # try:
-        #   with open("/sys/class/powercap/intel-rapl:0/energy_uj", "r") as file:
-        #     energy_old = float(file.readline().strip())
-        # except IOError as e:
-        #   print(f"Failed to open energy_uj file: {e}")
-        #   return
-        time.sleep(1)
-        # try:
-        #   with open("/sys/class/powercap/intel-rapl:0/energy_uj", "r") as file:
-        #     energy_now = float(file.readline().strip())
-        # except IOError as e:
-        #   print(f"Failed to open energy_uj file: {e}")
-        #   return
-        # energy_consumed = (energy_now - energy_old) / 1e6
-        # self.c_energy.value = energy_consumed
+    # def get_energy_consumption(self):
+    #   while True:
+    #     # try:
+    #     #   with open("/sys/class/powercap/intel-rapl:0/energy_uj", "r") as file:
+    #     #     energy_old = float(file.readline().strip())
+    #     # except IOError as e:
+    #     #   print(f"Failed to open energy_uj file: {e}")
+    #     #   return
+    #     time.sleep(1)
+    #     # try:
+    #     #   with open("/sys/class/powercap/intel-rapl:0/energy_uj", "r") as file:
+    #     #     energy_now = float(file.readline().strip())
+    #     # except IOError as e:
+    #     #   print(f"Failed to open energy_uj file: {e}")
+    #     #   return
+    #     # energy_consumed = (energy_now - energy_old) / 1e6
+    #     # self.c_energy.value = energy_consumed
 
     def monitor_process(self):
       prev_sc,prev_rc=0,0
@@ -234,15 +234,15 @@ class transferService:
           os.remove(f)
 
     def reset(self):
-      if self.speed_calculator and self.speed_calculator.is_alive():
-          self.speed_calculator.terminate()
-          self.speed_calculator.join()
+      # if self.speed_calculator and self.speed_calculator.is_alive():
+      #     self.speed_calculator.terminate()
+      #     self.speed_calculator.join()
       if self.rtt_calculator_process and self.rtt_calculator_process.is_alive():
           self.rtt_calculator_process.terminate()
           self.rtt_calculator_process.join()
-      if self.energy_process and self.energy_process.is_alive():
-          self.energy_process.terminate()
-          self.energy_process.join()
+      # if self.energy_process and self.energy_process.is_alive():
+      #     self.energy_process.terminate()
+      #     self.energy_process.join()
       if self.monitor_thread and self.monitor_thread.is_alive():
           self.monitor_thread.terminate()
           self.monitor_thread.join()
@@ -264,12 +264,12 @@ class transferService:
       self.c_concurrency.value = 1
       self.c_energy.value = 0.0
       self.runtime_status.value = 0
-      self.speed_calculator = Process(target=self.calculate_download_speed)
-      self.speed_calculator.start()
+      # self.speed_calculator = Process(target=self.calculate_download_speed)
+      # self.speed_calculator.start()
       self.rtt_calculator_process = Process(target=self.rtt_calculator)
       self.rtt_calculator_process.start()
-      self.energy_process = Process(target=self.get_energy_consumption)
-      self.energy_process.start()
+      # self.energy_process = Process(target=self.get_energy_consumption)
+      # self.energy_process.start()
       self.monitor_thread = Process(target=self.monitor_process)
       self.run_program_thread = Process(target=self.run_programs)
       self.monitor_thread.start()
@@ -301,17 +301,17 @@ class transferService:
 
     def cleanup(self):
       os.system("pkill -f parallel_concurrent")
-      if self.speed_calculator and self.speed_calculator.is_alive():
-          self.speed_calculator.terminate()
-          self.speed_calculator.join()
+      # if self.speed_calculator and self.speed_calculator.is_alive():
+      #     self.speed_calculator.terminate()
+      #     self.speed_calculator.join()
 
       if self.rtt_calculator_process and self.rtt_calculator_process.is_alive():
           self.rtt_calculator_process.terminate()
           self.rtt_calculator_process.join()
 
-      if self.energy_process and self.energy_process.is_alive():
-          self.energy_process.terminate()
-          self.energy_process.join()
+      # if self.energy_process and self.energy_process.is_alive():
+      #     self.energy_process.terminate()
+      #     self.energy_process.join()
 
       if self.monitor_thread and self.monitor_thread.is_alive():
           self.monitor_thread.terminate()

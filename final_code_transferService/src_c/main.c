@@ -33,7 +33,7 @@ HashTable *dataGenTable = NULL;
 #define PORT 8080
 
 atomic_int downloaded_chunks;
-
+atomic_int current_energy;
 // atomic_int throughput = 0.0;
 
 // atomic_double total_energy_used_a = 0.0;
@@ -95,7 +95,9 @@ void* energy_monitor_thread(void* arg) {
         fscanf(file, "%lf", &energy_now);
         fclose(file);
         energy+=energy_now-energy_old;
+        atomic_store(&current_energy, (int)((energy_now - energy_old) / 1000000));
         energy_old=energy_now;
+
     }
     // file = fopen("/sys/class/powercap/intel-rapl:0/energy_uj", "r");
     // fscanf(file, "%lf", &energy_end);
@@ -300,7 +302,9 @@ int main(int argc, char *argv[]) {
         // int temp_throughput = atomic_load(&throughput);
         // double main_thread_throughput = (double) temp_throughput;
         char sendBuffer[1024];
-        sprintf(sendBuffer, "Throughput: %.2f, Energy Used: %.2f", global_throughput, total_energy_used);
+        int temp_energy = atomic_load(&current_energy);
+        printf("Energy used: %d Joules\n", temp_energy);
+        sprintf(sendBuffer, "Throughput: %.2f, Energy Used: %d", global_throughput, temp_energy);
         send(new_socket, sendBuffer, strlen(sendBuffer), 0);
 
     } while(continueReceiving);
