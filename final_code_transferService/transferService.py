@@ -85,7 +85,7 @@ class transferService:
           time.sleep(1)
           current_rx = psutil.net_io_counters(pernic=True)[self.INTERFACE].bytes_recv
           speed_bps = current_rx - prev_rx
-          self.speed_mbps.value = (speed_bps * 8) / 1_000_000  # 8 bits per byte and 1e6 bits in a Mbps
+          # self.speed_mbps.value = (speed_bps * 8) / 1_000_000  # 8 bits per byte and 1e6 bits in a Mbps
           # print(f"Download Speed: {speed_mbps:.2f} Mbps")
           prev_rx = current_rx
 
@@ -105,21 +105,21 @@ class transferService:
 
     def get_energy_consumption(self):
       while True:
-        try:
-          with open("/sys/class/powercap/intel-rapl:0/energy_uj", "r") as file:
-            energy_old = float(file.readline().strip())
-        except IOError as e:
-          print(f"Failed to open energy_uj file: {e}")
-          return
+        # try:
+        #   with open("/sys/class/powercap/intel-rapl:0/energy_uj", "r") as file:
+        #     energy_old = float(file.readline().strip())
+        # except IOError as e:
+        #   print(f"Failed to open energy_uj file: {e}")
+        #   return
         time.sleep(1)
-        try:
-          with open("/sys/class/powercap/intel-rapl:0/energy_uj", "r") as file:
-            energy_now = float(file.readline().strip())
-        except IOError as e:
-          print(f"Failed to open energy_uj file: {e}")
-          return
-        energy_consumed = (energy_now - energy_old) / 1e6
-        self.c_energy.value = energy_consumed
+        # try:
+        #   with open("/sys/class/powercap/intel-rapl:0/energy_uj", "r") as file:
+        #     energy_now = float(file.readline().strip())
+        # except IOError as e:
+        #   print(f"Failed to open energy_uj file: {e}")
+        #   return
+        # energy_consumed = (energy_now - energy_old) / 1e6
+        # self.c_energy.value = energy_consumed
 
     def monitor_process(self):
       prev_sc,prev_rc=0,0
@@ -155,10 +155,11 @@ class transferService:
         record_list.append(energy_consumed)
         record_list.append(datetime.now())
         self.throughput_logs.append(record_list)
-        self.log.info("Throughput @{0}s:   {1}Mbps, lossRate: {2} CC:{3}  score:{4}  rtt:{5} ms energy:{6} Jules".format(
+        self.log.info("Throughput @{0}s:   {1}Gbps, lossRate: {2} CC:{3}  score:{4}  rtt:{5} ms energy:{6} Jules".format(
             time.time(), curr_thrpt,lr,cc_level,score_value,network_rtt,energy_consumed))
         t2 = time.time()
         time.sleep(max(0, 1 - (t2-t1)))
+
     def run_transfer_parameter_client(self):
       s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
       while True:
@@ -181,8 +182,22 @@ class transferService:
             if response.startswith("TERMINATE"):
               print("Received termination signal. Exiting...")
               break
+            # if response.startswith("OK"):
+            #   print("Received ok signal. continuing...")
+            #   continue
+            raw_response = s.recv(1024)
+            response = raw_response.decode().strip()
+            print(f"Received response: {response}")
+            throughput_string = response.split(",")[0].split(":")[1].strip()
+            energy_used_string = response.split(",")[1].split(":")[1].strip()
+            throughput, energy_used = map(float, [throughput_string, energy_used_string])
+            self.speed_mbps.value=throughput
+            self.c_energy.value=energy_used
+            # print(f"Throughput: {throughput} Gbps, Energy Used: {energy_used} J")
           except socket.error as e:
             print(f"Failed to communicate with server: {e}")
+            # self.speed_mbps.value=0.0
+            # self.c_energy.value=0.0
             break
 
       s.close()
@@ -204,7 +219,7 @@ class transferService:
         process = subprocess.Popen(["./parallel_concurrent", self.REMOTE_IP, log_file_path],
                                     stdout=file, stderr=file)
         # Start the watchdog timer
-        watchdog = WatchdogTimer(1000, lambda: kill_process(process))
+        watchdog = WatchdogTimer(500, lambda: kill_process(process))
         watchdog.reset()
         client_process = Process(target=self.run_transfer_parameter_client)
         client_process.start()
@@ -335,20 +350,23 @@ if __name__ == "__main__":
       ]
   )
 
-  REMOTE_IP = "192.5.87.228"
+  # REMOTE_IP = "192.5.87.228"
+  REMOTE_IP = "128.205.222.176"
   REMOTE_PORT = "80"
   INTERVAL = 1
-  INTERFACE="eno1np0"
-  SERVER_IP = '10.52.1.91'
+  # INTERFACE="eno1np0"
+  INTERFACE="enp3s0"
+  # SERVER_IP = '10.52.1.91'
+  SERVER_IP = '127.0.0.1'
   SERVER_PORT = 8080
-  OPTIMIZER="random"
+  OPTIMIZER="random_test"
   transfer_service=transferService(REMOTE_IP,REMOTE_PORT,INTERVAL,INTERFACE,SERVER_IP,SERVER_PORT,OPTIMIZER,log)
-  transfer_s=transfer_service.reset()
-
-  while transfer_s is not None:
-    transfer_s=transfer_service.step(1,1)
-    transfer_s=transfer_service.step(3,3)
-    transfer_s=transfer_service.step(16,16)
+  transfer_service.reset()
+  transfer_s=0
+  while transfer_s != 1000000:
+    _,transfer_s=transfer_service.step(1,1)
+    _,transfer_s=transfer_service.step(3,3)
+    _,transfer_s=transfer_service.step(8,8)
 
   transfer_service.cleanup()
 

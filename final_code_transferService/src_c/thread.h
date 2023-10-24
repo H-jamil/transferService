@@ -6,8 +6,8 @@
 #include <pthread.h>
 #include <time.h>
 #include <curl/curl.h>
-// #include "/home/jamilm/libzmq/include/zmq.h"
-#include <zmq.h>
+#include "/home/jamilm/libzmq/include/zmq.h"
+// #include <zmq.h>
 #include "data_generator.h"
 #include "queue.h"
 

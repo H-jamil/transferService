@@ -6,8 +6,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/socket.h>
-// #include "/home/jamilm/libzmq/include/zmq.h"
-#include <zmq.h>
+#include "/home/jamilm/libzmq/include/zmq.h"
+// #include <zmq.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include "hash_table.h"
@@ -21,16 +21,22 @@ pthread_mutex_t logMutex;
 int current_parallelism = 0;
 pthread_mutex_t parallelism_mutex;
 double total_energy_used = 0;
+double global_throughput = 0;
 int monitoring_active = 1;
 HashTable *dataGenTable = NULL;
 
 
-#define CHUNK_SIZE 40000000
-#define MAX_FILE_NUMBER 32
+// #define CHUNK_SIZE 40000000
+#define CHUNK_SIZE 200000
+// #define MAX_FILE_NUMBER 32
+#define MAX_FILE_NUMBER 8
 #define PORT 8080
 
 atomic_int downloaded_chunks;
 
+// atomic_int throughput = 0.0;
+
+// atomic_double total_energy_used_a = 0.0;
 
 typedef struct monitor_args {
     atomic_int *downloaded_chunks;
@@ -51,8 +57,10 @@ void* monitor_thread(void* arg) {
         current_downloaded_chunks = atomic_load(args->downloaded_chunks);
         new_bytes_downloaded = (unsigned long long)current_downloaded_chunks * args->chunk_size;
         double throughput = (double)(new_bytes_downloaded - old_bytes_downloaded) * 8 / 1000000000;
+        global_throughput = throughput;
         pthread_mutex_lock(args->logMutex);
         fprintf(args->logFile, "Monitor Thread Throughput : %.2f Gbps\n", throughput);
+        // fprintf(args->logFile, "Monitor Thread Throughput : %d Gbps\n", local_throughput);
         pthread_mutex_unlock(args->logMutex);
         if (current_downloaded_chunks == args->total_chunks) {
             atomic_store(&args->job_done, 1);
@@ -215,7 +223,8 @@ int main(int argc, char *argv[]) {
     }
     address.sin_family = AF_INET;
     // address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_addr.s_addr = inet_addr("10.52.1.91");
+    // address.sin_addr.s_addr = inet_addr("10.52.1.91");
+    address.sin_addr.s_addr = inet_addr("127.0.0.1");
     address.sin_port = htons(PORT);
 
     if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
@@ -279,6 +288,8 @@ int main(int argc, char *argv[]) {
         else{
             send(new_socket, ok_msg, sizeof(ok_msg), 0);
         }
+
+
         // Prompt user to enter values
         pthread_mutex_lock(&logMutex);
         fprintf(logFile, "Main Thread changed parallelism to %d and concurrency to %d\n", user_parallelism, user_concurrency);
@@ -286,6 +297,11 @@ int main(int argc, char *argv[]) {
         set_parallel_value(user_parallelism);
         set_concurrent_value(user_concurrency);
         sleep(2*UPDATE_TIME);
+        // int temp_throughput = atomic_load(&throughput);
+        // double main_thread_throughput = (double) temp_throughput;
+        char sendBuffer[1024];
+        sprintf(sendBuffer, "Throughput: %.2f, Energy Used: %.2f", global_throughput, total_energy_used);
+        send(new_socket, sendBuffer, strlen(sendBuffer), 0);
 
     } while(continueReceiving);
 

@@ -11,7 +11,7 @@ SOURCES = main.c concurrent_thread.c parallel_thread.c data_generator.c queue.c 
 OBJ = $(SOURCES:.c=.o)
 
 # Executable
-EXECUTABLE = parallel_concurrent
+EXECUTABLE = ../parallel_concurrent
 
 all: $(EXECUTABLE)
 

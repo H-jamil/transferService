@@ -1,0 +1,8 @@
+Failed to open energy_uj file: Permission denied
+From Main : Total 8000 chunks will be downloaded
+Main Thread change parallelism to MAX and concurrency to MAX
+Main thread is shutting off all concurrent threads
+All done
+Total energy used: 0.000000 Joules
+mean Network throughput: 88 [msg/s]
+mean Network throughput: 711.088 [Mb/s]
