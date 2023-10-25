@@ -75,10 +75,10 @@ if __name__ == "__main__":
           log.StreamHandler()
       ]
   )
-  REMOTE_IP = "128.205.222.176"
+  REMOTE_IP = "192.5.87.86"
   REMOTE_PORT = "80"
   INTERVAL = 1
-  INTERFACE="enp3s0"
+  INTERFACE="eno1np0"
   SERVER_IP = '127.0.0.1'
   SERVER_PORT = 8080
   OPTIMIZER="GD"
@@ -86,10 +86,10 @@ if __name__ == "__main__":
   env=transferClass(transfer_service)
   done=False
   initial_state = env.reset()
-  # optimal_actions = gradient_opt(env)
-  # print("Optimal Actions: ", optimal_actions)
-  best_params = bayes_optimizer(env)
-  print(f"Optimal parameters: {best_params}")
+  optimal_actions = gradient_opt(env)
+  print("Optimal Actions: ", optimal_actions)
+  # best_params = bayes_optimizer(env)
+  # print(f"Optimal parameters: {best_params}")
   env.close()
   # for i in range(5):
   #   print("Trial: ",i)

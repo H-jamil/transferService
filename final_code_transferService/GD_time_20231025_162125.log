@@ -1,0 +1,44 @@
+From Main : Total 2500 chunks will be downloaded
+Energy used: 50 Joules
+Energy used: 52 Joules
+Energy used: 50 Joules
+Energy used: 52 Joules
+Energy used: 50 Joules
+Energy used: 56 Joules
+Energy used: 50 Joules
+Energy used: 50 Joules
+Energy used: 72 Joules
+Energy used: 97 Joules
+Energy used: 92 Joules
+Energy used: 106 Joules
+Energy used: 86 Joules
+Energy used: 73 Joules
+Energy used: 79 Joules
+Energy used: 89 Joules
+Energy used: 54 Joules
+Energy used: 58 Joules
+Energy used: 58 Joules
+Energy used: 58 Joules
+Energy used: 68 Joules
+Energy used: 65 Joules
+Energy used: 63 Joules
+Energy used: 78 Joules
+Energy used: 62 Joules
+Energy used: 59 Joules
+Energy used: 60 Joules
+Energy used: 62 Joules
+Energy used: 58 Joules
+Energy used: 56 Joules
+Energy used: 73 Joules
+Energy used: 100 Joules
+Energy used: 76 Joules
+Energy used: 142 Joules
+Energy used: 134 Joules
+Energy used: 54 Joules
+Energy used: 116 Joules
+Main Thread change parallelism to MAX and concurrency to MAX
+Main thread is shutting off all concurrent threads
+All done
+Total energy used: -246178.733062 Joules
+mean Network throughput: 11 [msg/s]
+mean Network throughput: 3603.364 [Mb/s]
