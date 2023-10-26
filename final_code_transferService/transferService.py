@@ -73,21 +73,43 @@ class transferService:
       self.runtime_status=Value('i', 0)
       self.monitor_thread = None
       self.run_program_thread = None
-      # self.speed_calculator = None
+      self.speed_calculator = None
       self.rtt_calculator_process = None
       # self.energy_process = None
 
 
+      # prev_rx = psutil.net_io_counters(pernic=True)[self.INTERFACE].bytes_recv
+      # while True:
+      #     time.sleep(1)
+      #     current_rx = psutil.net_io_counters(pernic=True)[self.INTERFACE].bytes_recv
+      #     speed_bps = current_rx - prev_rx
+      #     # self.speed_mbps.value = (speed_bps * 8) / 1_000_000  # 8 bits per byte and 1e6 bits in a Mbps
+      #     # print(f"Download Speed: {speed_mbps:.2f} Mbps")
+      #     prev_rx = current_rx
+    def calculate_download_speed(self):
+      sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+      # Bind the socket to the address and port
+      server_address = ('127.0.0.1', 8081)
+      sock.bind(server_address)
+      print(f"Listening for messages from 8081 {server_address}")
 
-    # def calculate_download_speed(self):
-    #   prev_rx = psutil.net_io_counters(pernic=True)[self.INTERFACE].bytes_recv
-    #   while True:
-    #       time.sleep(1)
-    #       current_rx = psutil.net_io_counters(pernic=True)[self.INTERFACE].bytes_recv
-    #       speed_bps = current_rx - prev_rx
-    #       # self.speed_mbps.value = (speed_bps * 8) / 1_000_000  # 8 bits per byte and 1e6 bits in a Mbps
-    #       # print(f"Download Speed: {speed_mbps:.2f} Mbps")
-    #       prev_rx = current_rx
+      while True:
+          # Receive data sent from the server
+          try:
+              data, address = sock.recvfrom(4096)
+              received_message = data.decode('utf-8')  # renamed to received_message
+              # print(f"Received {received_message} from 8081 {address}")
+          except Exception as e:  # catching general exception and printing it might be more informative
+              print(f"Failed to receive data from server. Error: {e}")
+              continue
+
+          # Extract throughput value
+          try:
+              throughput_value = received_message.split(":")[1].strip().split(" ")[0]
+              # print(f"Throughput Value: {throughput_value}")
+              self.speed_mbps.value = float(throughput_value)  # converting to float
+          except IndexError:
+              print("Couldn't extract the throughput value from the received message.")
 
     def rtt_calculator(self):
       while True:
@@ -191,7 +213,7 @@ class transferService:
             throughput_string = response.split(",")[0].split(":")[1].strip()
             energy_used_string = response.split(",")[1].split(":")[1].strip()
             throughput, energy_used = map(float, [throughput_string, energy_used_string])
-            self.speed_mbps.value=throughput
+            # self.speed_mbps.value=throughput
             self.c_energy.value=energy_used
             # print(f"Throughput: {throughput} Gbps, Energy Used: {energy_used} J")
           except socket.error as e:
@@ -234,9 +256,9 @@ class transferService:
           os.remove(f)
 
     def reset(self):
-      # if self.speed_calculator and self.speed_calculator.is_alive():
-      #     self.speed_calculator.terminate()
-      #     self.speed_calculator.join()
+      if self.speed_calculator and self.speed_calculator.is_alive():
+          self.speed_calculator.terminate()
+          self.speed_calculator.join()
       if self.rtt_calculator_process and self.rtt_calculator_process.is_alive():
           self.rtt_calculator_process.terminate()
           self.rtt_calculator_process.join()
@@ -264,8 +286,8 @@ class transferService:
       self.c_concurrency.value = 1
       self.c_energy.value = 0.0
       self.runtime_status.value = 0
-      # self.speed_calculator = Process(target=self.calculate_download_speed)
-      # self.speed_calculator.start()
+      self.speed_calculator = Process(target=self.calculate_download_speed)
+      self.speed_calculator.start()
       self.rtt_calculator_process = Process(target=self.rtt_calculator)
       self.rtt_calculator_process.start()
       # self.energy_process = Process(target=self.get_energy_consumption)
@@ -301,9 +323,9 @@ class transferService:
 
     def cleanup(self):
       os.system("pkill -f parallel_concurrent")
-      # if self.speed_calculator and self.speed_calculator.is_alive():
-      #     self.speed_calculator.terminate()
-      #     self.speed_calculator.join()
+      if self.speed_calculator and self.speed_calculator.is_alive():
+          self.speed_calculator.terminate()
+          self.speed_calculator.join()
 
       if self.rtt_calculator_process and self.rtt_calculator_process.is_alive():
           self.rtt_calculator_process.terminate()

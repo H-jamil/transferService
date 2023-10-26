@@ -84,13 +84,27 @@ if __name__ == "__main__":
   OPTIMIZER="GD"
   transfer_service=transferService(REMOTE_IP,REMOTE_PORT,INTERVAL,INTERFACE,SERVER_IP,SERVER_PORT,OPTIMIZER,log)
   env=transferClass(transfer_service)
+
   done=False
+  # initial_state = env.reset()
+  # while True:
+  #   state, score, done, _ = env.step(6)
+  #   if done:
+  #     print("Random Optimizer Exits ...")
+  #     break
+
   initial_state = env.reset()
+
   optimal_actions = gradient_opt(env)
   print("Optimal Actions: ", optimal_actions)
+
   # best_params = bayes_optimizer(env)
   # print(f"Optimal parameters: {best_params}")
+
   env.close()
+
+
+
   # for i in range(5):
   #   print("Trial: ",i)
   #   env=transferClass(transfer_service)
