@@ -28,3 +28,8 @@ source "$BASHRC"
 echo "Changes added to .bashrc and sourced."
 echo "Cloning transferService repository..."
 git clone https://github.com/H-jamil/transferService.git
+
+git config --global user.name h-jamil
+git config --global user.email mdhasibul.jamil@siu.edu
+git config -l
+
