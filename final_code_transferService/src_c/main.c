@@ -28,7 +28,7 @@ HashTable *dataGenTable = NULL;
 
 #define CHUNK_SIZE 40000000
 // #define CHUNK_SIZE 200000
-#define MAX_FILE_NUMBER 100
+#define MAX_FILE_NUMBER 32
 // #define MAX_FILE_NUMBER 8
 #define PORT 8080
 #define PORT_M 8081

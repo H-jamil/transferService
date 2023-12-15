@@ -13,11 +13,11 @@ import numpy as np
 import re
 # import pandas as pd
 
-REMOTE_IP = "192.5.87.228"
+REMOTE_IP = "129.114.109.231"
 REMOTE_PORT = "80"
 INTERVAL = 1
-INTERFACE="eno1np0"
-SERVER_IP = '10.52.1.91'
+INTERFACE="eno1"
+SERVER_IP = '10.140.82.45'
 SERVER_PORT = 8080
 
 speed_mbps = Value('d', 0.0)  # 'd' indicates a double
@@ -222,13 +222,13 @@ def run_transfer_parameter_client(SERVER_IP,SERVER_PORT):
 
 
 if __name__ == "__main__":
-    run_no = list(range(0, 20))
-    parallelism_values = [1, 2, 4, 8, 16]
-    concurrency_values = [1, 2, 4, 8, 16]
+    # run_no = list(range(0, 20))
+    # parallelism_values = [1, 2, 4, 8, 16]
+    # concurrency_values = [1, 2, 4, 8, 16]
     # global throughput_logs
-    # run_no = list(range(1, 2))
-    # parallelism_values = [ 8, 16]
-    # concurrency_values = [ 8, 16]
+    run_no = list(range(1, 2))
+    parallelism_values = [ 8, 16]
+    concurrency_values = [ 8, 16]
     B=10
     K=1.02
     speed_calculator = Process(target=calculate_download_speed, args=(INTERFACE,))

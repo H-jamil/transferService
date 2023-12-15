@@ -51,6 +51,8 @@ def tcp_stats(REMOTE_IP):
     # print("Time taken to collect tcp stats: {0}ms".format(np.round((end-start)*1000)))
     return sent, retm
 
+
+
 class transferService:
     def __init__(self, REMOTE_IP, REMOTE_PORT, INTERVAL, INTERFACE, SERVER_IP, SERVER_PORT,OPTIMIZER,log):
       self.log=log
@@ -69,12 +71,14 @@ class transferService:
       self.throughput_logs = self.manager.list()
       self.B = 10
       self.K = 1.02
+      self.packet_loss_rate = Value('d', 0.0)
       self.OPTIMIZER=OPTIMIZER
       self.runtime_status=Value('i', 0)
       self.monitor_thread = None
       self.run_program_thread = None
       self.speed_calculator = None
       self.rtt_calculator_process = None
+      self.loss_rate_client_process = None
       # self.energy_process = None
 
 
@@ -125,24 +129,25 @@ class transferService:
             print(f"Failed to ping {self.REMOTE_IP}")
             self.rtt_ms.value = 0.0
 
-    # def get_energy_consumption(self):
-    #   while True:
-    #     # try:
-    #     #   with open("/sys/class/powercap/intel-rapl:0/energy_uj", "r") as file:
-    #     #     energy_old = float(file.readline().strip())
-    #     # except IOError as e:
-    #     #   print(f"Failed to open energy_uj file: {e}")
-    #     #   return
-    #     time.sleep(1)
-    #     # try:
-    #     #   with open("/sys/class/powercap/intel-rapl:0/energy_uj", "r") as file:
-    #     #     energy_now = float(file.readline().strip())
-    #     # except IOError as e:
-    #     #   print(f"Failed to open energy_uj file: {e}")
-    #     #   return
-    #     # energy_consumed = (energy_now - energy_old) / 1e6
-    #     # self.c_energy.value = energy_consumed
-
+    def loss_rate_client(self):
+      server_address = ('129.114.109.231', 9081)
+      with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        try:
+          s.connect(server_address)
+          while True:
+            data = s.recv(1024)
+            message = data.decode()
+            try:
+              lr_str = message.split("lossRate: ")[1].strip()
+              lr = float(lr_str)
+              # print("Sender Loss Rate:", lr)
+              self.packet_loss_rate.value = lr
+            except (IndexError, ValueError) as e:
+                print("Error extracting loss rate:", e)
+                self.packet_loss_rate.value = 0.0
+        except Exception as e:
+            print("Error connecting to server:", e)
+            self.packet_loss_rate.value = 0.0
     def monitor_process(self):
       prev_sc,prev_rc=0,0
       while True:
@@ -153,6 +158,7 @@ class transferService:
         # print(f"Monitoring Process : Download Speed: {curr_thrpt:.2f} Mbps")
         curr_parallelism=self.c_parallelism.value
         curr_concurrency=self.c_concurrency.value
+        loss_rate = self.packet_loss_rate.value
         cc_level=curr_parallelism*curr_concurrency
         record_list=[]
         curr_sc,curr_rc=tcp_stats(self.REMOTE_IP)
@@ -176,9 +182,10 @@ class transferService:
         record_list.append(network_rtt)
         record_list.append(energy_consumed)
         record_list.append(datetime.now())
+        record_list.append(loss_rate)
         self.throughput_logs.append(record_list)
-        self.log.info("Throughput @{0}s:   {1}Gbps, lossRate: {2} CC:{3}  score:{4}  rtt:{5} ms energy:{6} Jules".format(
-            time.time(), curr_thrpt,lr,cc_level,score_value,network_rtt,energy_consumed))
+        self.log.info("Throughput @{0}s:   {1}Gbps, lossRate: {2} CC:{3}  score:{4}  rtt:{5} ms energy:{6} Jules r-plr:{7} ".format(
+            time.time(), curr_thrpt,lr,cc_level,score_value,network_rtt,energy_consumed,loss_rate))
         t2 = time.time()
         time.sleep(max(0, 1 - (t2-t1)))
 
@@ -262,6 +269,9 @@ class transferService:
       if self.rtt_calculator_process and self.rtt_calculator_process.is_alive():
           self.rtt_calculator_process.terminate()
           self.rtt_calculator_process.join()
+      if self.loss_rate_client_process and self.loss_rate_client_process.is_alive():
+          self.loss_rate_client_process.terminate()
+          self.loss_rate_client_process.join()
       # if self.energy_process and self.energy_process.is_alive():
       #     self.energy_process.terminate()
       #     self.energy_process.join()
@@ -286,10 +296,14 @@ class transferService:
       self.c_concurrency.value = 1
       self.c_energy.value = 0.0
       self.runtime_status.value = 0
+      self.packet_loss_rate.value = 0.0
       self.speed_calculator = Process(target=self.calculate_download_speed)
       self.speed_calculator.start()
       self.rtt_calculator_process = Process(target=self.rtt_calculator)
       self.rtt_calculator_process.start()
+      self.loss_rate_client_process = Process(target=self.loss_rate_client)
+      self.loss_rate_client_process.start()
+
       # self.energy_process = Process(target=self.get_energy_consumption)
       # self.energy_process.start()
       self.monitor_thread = Process(target=self.monitor_process)
@@ -330,6 +344,10 @@ class transferService:
       if self.rtt_calculator_process and self.rtt_calculator_process.is_alive():
           self.rtt_calculator_process.terminate()
           self.rtt_calculator_process.join()
+
+      if self.loss_rate_client_process and self.loss_rate_client_process.is_alive():
+          self.loss_rate_client_process.terminate()
+          self.loss_rate_client_process.join()
 
       # if self.energy_process and self.energy_process.is_alive():
       #     self.energy_process.terminate()

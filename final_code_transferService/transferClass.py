@@ -75,10 +75,10 @@ if __name__ == "__main__":
           log.StreamHandler()
       ]
   )
-  REMOTE_IP = "192.5.87.86"
+  REMOTE_IP = "129.114.109.231"
   REMOTE_PORT = "80"
   INTERVAL = 1
-  INTERFACE="eno1np0"
+  INTERFACE="eno1"
   SERVER_IP = '127.0.0.1'
   SERVER_PORT = 8080
   OPTIMIZER="GD"
