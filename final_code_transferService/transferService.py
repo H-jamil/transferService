@@ -79,17 +79,7 @@ class transferService:
       self.speed_calculator = None
       self.rtt_calculator_process = None
       self.loss_rate_client_process = None
-      # self.energy_process = None
 
-
-      # prev_rx = psutil.net_io_counters(pernic=True)[self.INTERFACE].bytes_recv
-      # while True:
-      #     time.sleep(1)
-      #     current_rx = psutil.net_io_counters(pernic=True)[self.INTERFACE].bytes_recv
-      #     speed_bps = current_rx - prev_rx
-      #     # self.speed_mbps.value = (speed_bps * 8) / 1_000_000  # 8 bits per byte and 1e6 bits in a Mbps
-      #     # print(f"Download Speed: {speed_mbps:.2f} Mbps")
-      #     prev_rx = current_rx
     def calculate_download_speed(self):
       sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
       # Bind the socket to the address and port
@@ -171,7 +161,8 @@ class transferService:
           lr = rc/sc if sc>rc else 0
         if lr < 0:
           lr=0
-        plr_impact = self.B*lr
+        # plr_impact = self.B*lr
+        plr_impact = self.B*loss_rate
         cc_impact_nl = self.K**cc_level
         score = (curr_thrpt/cc_impact_nl) - (curr_thrpt * plr_impact)
         score_value = np.round(score * (-1))
@@ -181,10 +172,10 @@ class transferService:
         record_list.append(score_value)
         record_list.append(network_rtt)
         record_list.append(energy_consumed)
-        record_list.append(datetime.now())
         record_list.append(loss_rate)
+        record_list.append(datetime.now())
         self.throughput_logs.append(record_list)
-        self.log.info("Throughput @{0}s:   {1}Gbps, lossRate: {2} CC:{3}  score:{4}  rtt:{5} ms energy:{6} Jules r-plr:{7} ".format(
+        self.log.info("Throughput @{0}s:   {1}Gbps, lossRate: {2} CC:{3}  score:{4}  rtt:{5} ms energy:{6} Jules s-plr:{7} ".format(
             time.time(), curr_thrpt,lr,cc_level,score_value,network_rtt,energy_consumed,loss_rate))
         t2 = time.time()
         time.sleep(max(0, 1 - (t2-t1)))
@@ -211,22 +202,15 @@ class transferService:
             if response.startswith("TERMINATE"):
               print("Received termination signal. Exiting...")
               break
-            # if response.startswith("OK"):
-            #   print("Received ok signal. continuing...")
-            #   continue
             raw_response = s.recv(1024)
             response = raw_response.decode().strip()
             print(f"Received response: {response}")
             throughput_string = response.split(",")[0].split(":")[1].strip()
             energy_used_string = response.split(",")[1].split(":")[1].strip()
             throughput, energy_used = map(float, [throughput_string, energy_used_string])
-            # self.speed_mbps.value=throughput
             self.c_energy.value=energy_used
-            # print(f"Throughput: {throughput} Gbps, Energy Used: {energy_used} J")
           except socket.error as e:
             print(f"Failed to communicate with server: {e}")
-            # self.speed_mbps.value=0.0
-            # self.c_energy.value=0.0
             break
 
       s.close()
@@ -310,7 +294,7 @@ class transferService:
       self.run_program_thread = Process(target=self.run_programs)
       self.monitor_thread.start()
       self.run_program_thread.start()
-      return np.zeros(35,)
+      return np.zeros(40,)
       # return 0
 
     def step(self, parallelism,concurrency):
@@ -333,7 +317,7 @@ class transferService:
         avg_score = total_score / 5.0
         return result_array, avg_score
       else:
-        return np.zeros(35,),1000000
+        return np.zeros(40,),1000000
 
     def cleanup(self):
       os.system("pkill -f parallel_concurrent")

@@ -61,58 +61,6 @@ def gradient_opt(transferEnvironment):
     print("Total Actions: ", count)
     return ccs
 
-
-
-# def bayes_optimizer(transferEnvironment):
-#     limit_obs, count = 25, 0
-#     max_thread = transferEnvironment.action_space.n
-#     iterations = -1
-#     last_score = None
-
-#     # Define objective function for BayesianOptimization
-#     def objective_function(x):
-#         nonlocal last_score  # Declare last_score as nonlocal to modify its value inside this function
-#         result = transferEnvironment.bayes_step([x])
-#         last_score = result  # Store the last score
-#         return last_score     # We are maximizing in this library by default
-
-#     optimizer = BayesianOptimization(
-#         f=objective_function,
-#         pbounds={'x': (1, max_thread)},
-#         verbose=2,
-#         random_state=1,
-#     )
-
-#     while True:
-#         count += 1
-
-#         print(f"Iteration {count} Starts ...")
-
-#         if count == 1:
-#             # Maybe do more random exploration in the beginning
-#             optimizer.maximize(init_points=5, n_iter=0)
-#         else:
-#             optimizer.maximize(init_points=1, n_iter=1)
-
-#         best_params = optimizer.max['params']['x']
-#         best_score = -optimizer.max['target']  # remember to negate the result
-
-#         print(f"Iteration {count} Ends. Best Params: {best_params} and Score: {best_score}.")
-
-#         if last_score == 1000000:
-#             print("Bayesian Optimizer Exits ...")
-#             break
-
-#         cc = best_params
-#         if (best_score > 0) and (cc < max_thread):
-#             max_thread = max(cc, 2)
-
-#         if iterations == count:
-#             print(f"Best parameters: {best_params} and score: {best_score}")
-#             break
-
-#     return best_params
-
 def bayes_optimizer(transferEnvironment):
   limit_obs, count = 25, 0
   max_thread = transferEnvironment.action_space.n
@@ -178,3 +126,14 @@ def bayes_optimizer(transferEnvironment):
 
   return params
 
+def maximize(transferEnvironment):
+    max_action, count = transferEnvironment.action_space.n, 0
+    print(f"Max Action: {max_action}")
+    params = []
+    while True:
+        state, score, done, _ = transferEnvironment.step(max_action-1)
+        params.append(max_action-1)
+        if done:
+            print("Maximizer Exits ...")
+            break
+    return params

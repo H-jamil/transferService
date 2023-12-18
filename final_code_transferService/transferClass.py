@@ -1,4 +1,5 @@
 import gym
+import sys
 from gym import spaces
 import numpy as np
 import copy
@@ -38,80 +39,54 @@ class transferClass(gym.Env):
     _,score_b,done_b,__=self.step(params[0])
     return score_b
 
-  # def bayes_step(self, action):
-  #   # If action is a list or a numpy array, we want the first value.
-  #   # For multi-dimensional action spaces, you might need to handle more elements.
-  #   action_val = action[0] if isinstance(action, (list, np.ndarray)) else action
-
-  #   # Round the action value to get an integer action index.
-  #   action_idx = int(round(action_val))
-
-  #   # Ensure that the action index doesn't exceed the bounds of the action space.
-  #   action_idx = max(0, min(action_idx, len(self.action_array) - 1))
-
-  #   # Get the action from the action array using the index.
-  #   chosen_action = self.action_array[action_idx]
-
-  #   # Perform the chosen action using the transfer_service and get the new observation and reward.
-  #   new_observation, reward, done, _ = self.step(action_idx)
-
-  #   # In the context of Bayesian optimization, we usually maximize the objective.
-  #   # If your reward should be minimized (e.g., an error that should be minimized), negate the reward.
-  #   # Otherwise, you can just return the reward.
-  #   return reward
-
   def close(self):
     self.transfer_service.cleanup() # close transfer_service
 
+
+def main(optimizer):
+    log_FORMAT = '%(created)f -- %(levelname)s: %(message)s'
+    log_file = f"logFileDir/{optimizer}_{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}.log"
+    log.basicConfig(
+        format=log_FORMAT,
+        datefmt='%m/%d/%Y %I:%M:%S %p',
+        level=log.INFO,
+        handlers=[
+            log.FileHandler(log_file),
+            log.StreamHandler()
+        ]
+    )
+
+    REMOTE_IP = "129.114.109.231"
+    REMOTE_PORT = "80"
+    INTERVAL = 1
+    INTERFACE = "eno1"
+    SERVER_IP = '127.0.0.1'
+    SERVER_PORT = 8080
+    transfer_service = transferService(REMOTE_IP, REMOTE_PORT, INTERVAL, INTERFACE, SERVER_IP, SERVER_PORT, optimizer, log)
+    env = transferClass(transfer_service)
+    initial_state = env.reset()
+
+    if optimizer == 'GD':
+        optimal_actions = gradient_opt(env)
+        print("Optimal Actions: ", optimal_actions)
+    elif optimizer == 'BO':
+        best_params = bayes_optimizer(env)
+        print(f"Optimal parameters: {best_params}")
+    elif optimizer == 'RL':
+        # Assuming you have a function for RL optimizer
+        rl_results = rl_optimizer(env)  # Replace with actual RL optimizer function
+        print("RL Results: ", rl_results)
+    else:  # Default to 'max'
+        taken_actions = maximize(env)
+        print("Taken Actions: ", taken_actions)
+
+    env.close()
+
 if __name__ == "__main__":
-  log_FORMAT = '%(created)f -- %(levelname)s: %(message)s'
-  log_file = "logFileDir/" + datetime.now().strftime("%m_%d_%Y_%H_%M_%S") + ".log"
-  log.basicConfig(
-      format=log_FORMAT,
-      datefmt='%m/%d/%Y %I:%M:%S %p',
-      level=log.INFO,
-      handlers=[
-          log.FileHandler(log_file),
-          log.StreamHandler()
-      ]
-  )
-  REMOTE_IP = "129.114.109.231"
-  REMOTE_PORT = "80"
-  INTERVAL = 1
-  INTERFACE="eno1"
-  SERVER_IP = '127.0.0.1'
-  SERVER_PORT = 8080
-  OPTIMIZER="GD"
-  transfer_service=transferService(REMOTE_IP,REMOTE_PORT,INTERVAL,INTERFACE,SERVER_IP,SERVER_PORT,OPTIMIZER,log)
-  env=transferClass(transfer_service)
+    if len(sys.argv) != 2 or sys.argv[1] not in ['gd', 'bo', 'rl', 'max']:
+        print("Usage: python script.py <optimizer>")
+        print("Optimizer must be one of: 'gd', 'bo', 'rl', 'max'")
+        sys.exit(1)
 
-  done=False
-  # initial_state = env.reset()
-  # while True:
-  #   state, score, done, _ = env.step(6)
-  #   if done:
-  #     print("Random Optimizer Exits ...")
-  #     break
-
-  initial_state = env.reset()
-
-  optimal_actions = gradient_opt(env)
-  print("Optimal Actions: ", optimal_actions)
-
-  # best_params = bayes_optimizer(env)
-  # print(f"Optimal parameters: {best_params}")
-
-  env.close()
-
-
-
-  # for i in range(5):
-  #   print("Trial: ",i)
-  #   env=transferClass(transfer_service)
-  #   done=False
-  #   initial_state = env.reset()
-  #   best_params = bayes_optimizer(env)
-  #   print(f"Optimal parameters: {best_params}")
-  #   # optimal_actions = gradient_opt(env)
-  #   # print("Optimal Actions: ", optimal_actions)
-  #   env.close()
+    optimizer = sys.argv[1].upper()
+    main(optimizer)

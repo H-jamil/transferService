@@ -33,39 +33,39 @@ if __name__ == "__main__":
   REMOTE_IP = sys.argv[1]
   SERVER_IP = sys.argv[2]
   SERVER_PORT = int(sys.argv[3])
-
-  # t1 = time.time()
-  prev_sc, prev_rc = 0, 0
-  prev_sc, prev_rc = 0, 0
-  with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.bind((SERVER_IP, SERVER_PORT))
-    s.listen()
-    print(f"Server listening on {SERVER_IP}:{SERVER_PORT}")
-    conn, addr = s.accept()
-    with conn:
-      print(f"Connected by {addr}")
-      try:
-        while True:
-          t1 = time.time()
-          curr_sc, curr_rc = tcp_stats(REMOTE_IP)
-          sc, rc = curr_sc - prev_sc, curr_rc - prev_rc
-          lr = 0
-          if sc != 0:
-              lr = rc/sc if sc > rc else 0
-          if lr < 0:
-              lr = 0
-          prev_sc, prev_rc = curr_sc, curr_rc
-          print("Time {0}s: lossRate: {1} ".format(np.round(time.time()), lr))
-          message = f"lossRate: {lr}\n"
-          try:
-            conn.sendall(message.encode())
-          except BrokenPipeError:
-            print("Broken pipe error")
-            break
-          t2 = time.time()
-          time.sleep(max(0, 1 - (t2-t1)))
-      except KeyboardInterrupt:
-        s.close()
-        print("Server stopped manually")
+  while True:
+    # t1 = time.time()
+    prev_sc, prev_rc = 0, 0
+    prev_sc, prev_rc = 0, 0
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+      s.bind((SERVER_IP, SERVER_PORT))
+      s.listen()
+      print(f"Server listening on {SERVER_IP}:{SERVER_PORT}")
+      conn, addr = s.accept()
+      with conn:
+        print(f"Connected by {addr}")
+        try:
+          while True:
+            t1 = time.time()
+            curr_sc, curr_rc = tcp_stats(REMOTE_IP)
+            sc, rc = curr_sc - prev_sc, curr_rc - prev_rc
+            lr = 0
+            if sc != 0:
+                lr = rc/sc if sc > rc else 0
+            if lr < 0:
+                lr = 0
+            prev_sc, prev_rc = curr_sc, curr_rc
+            print("Time {0}s: lossRate: {1} ".format(np.round(time.time()), lr))
+            message = f"lossRate: {lr}\n"
+            try:
+              conn.sendall(message.encode())
+            except BrokenPipeError:
+              print("Broken pipe error")
+              break
+            t2 = time.time()
+            time.sleep(max(0, 1 - (t2-t1)))
+        except KeyboardInterrupt:
+          s.close()
+          print("Server stopped manually")
 
 
