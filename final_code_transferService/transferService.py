@@ -165,8 +165,8 @@ class transferService:
         plr_impact = self.B*loss_rate
         cc_impact_nl = self.K**cc_level
         score = (curr_thrpt/cc_impact_nl) - (curr_thrpt * plr_impact)
-        score_value = np.round(score * (-1))
-        # score_value =np.round(score * (1))
+        # score_value = np.round(score * (-1))
+        score_value =np.round(score * (1))
         prev_sc,prev_rc=curr_sc,curr_rc
         record_list.append(lr)
         record_list.append(score_value)
@@ -314,8 +314,10 @@ class transferService:
         # Step 4: Create a numpy array from the concatenated values
         result_array = np.array(concatenated_values)
         # Step 5: Compute the average of the 5 score values
-        avg_score = total_score / 5.0
-        return result_array, avg_score
+        print("From tranferService.step() Total Score: ", total_score )
+        # avg_score = total_score / 5.0
+        # return result_array, avg_score
+        return result_array,total_score
       else:
         return np.zeros(40,),1000000
 

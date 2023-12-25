@@ -11,12 +11,14 @@ from transferService import transferService
 from optimizer_gd import *
 
 class transferClass(gym.Env):
+  metadata = {"render_modes": ["human"], "render_fps": 30}
   def __init__(self,transferServiceObject):
+    super().__init__()
     self.action_array=[(1,1),(1,1),(2,2),(3,3),(4,4),(5,5),(6,6),(7,7),(8,8)]
     self.transfer_service = transferServiceObject
     self.action_space =spaces.Discrete(9) # example action space
-    self.observation_space = spaces.Box(low=0, high=np.inf, shape=(35,), dtype=np.float32) # example observation space
-    self.current_observation = np.zeros(35,) # initialize current observation
+    self.observation_space = spaces.Box(low=0, high=np.inf, shape=(40,), dtype=np.float32) # example observation space
+    self.current_observation = np.zeros(40,) # initialize current observation
 
   def reset(self):
     self.current_observation = self.transfer_service.reset() # get initial observation
@@ -24,11 +26,14 @@ class transferClass(gym.Env):
 
   def step(self, action):
     # perform action using transfer_service
+    print("Env step action ",action, type(action))
     new_observation,reward=self.transfer_service.step(self.action_array[action][0],self.action_array[action][1])
     if reward==1000000:
       done=True
     else:
       done=False
+    self.current_observation=new_observation
+    print("Env step observations ",new_observation)
     return new_observation, reward, done, {}
 
   def bayes_step(self,action):
@@ -36,8 +41,12 @@ class transferClass(gym.Env):
     print("Bayes Step: ",params)
     if params[0] > 8:
       params[0] = 8
-    _,score_b,done_b,__=self.step(params[0])
+    obs,score_b,done_b,__=self.step(params[0])
+    print("Bayes Step Observations: ",obs)
     return score_b
+
+  def render(self, mode="human"):
+    pass
 
   def close(self):
     self.transfer_service.cleanup() # close transfer_service
@@ -45,7 +54,8 @@ class transferClass(gym.Env):
 
 def main(optimizer):
     log_FORMAT = '%(created)f -- %(levelname)s: %(message)s'
-    log_file = f"logFileDir/{optimizer}_{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}.log"
+    extraString="logFile"
+    log_file = f"logFileDir/{optimizer}_{extraString}_{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}.log"
     log.basicConfig(
         format=log_FORMAT,
         datefmt='%m/%d/%Y %I:%M:%S %p',

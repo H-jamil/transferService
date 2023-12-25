@@ -55,7 +55,11 @@ def gradient_opt(transferEnvironment):
                 theta = 1
 
         update_cc = int(theta * gradient_change)
-        next_cc = (ccs[-1] + update_cc) % max_action
+        # next_cc = (ccs[-1] + update_cc) % max_action
+        offered_load = ccs[-1] + update_cc
+        if offered_load < 0:
+            offered_load = 1
+        next_cc = min(offered_load, max_action-1)
         print("Gradient: {0}, Gradient Change: {1}, Theta: {2}, Previous Action: {3}, Chosen Action: {4}".format(gradient, gradient_change, theta, ccs[-1], next_cc))
         ccs.append(next_cc)
     print("Total Actions: ", count)
@@ -98,7 +102,8 @@ def bayes_optimizer(transferEnvironment):
       if last_value == 1000000:
           print("Bayseian Optimizer Exits ...")
           break
-
+    #   print("Last Value: ", last_value)
+    #   print("Last Action: ", optimizer.Xi[-1][0])
       cc = optimizer.Xi[-1][0]
       if iterations < 1:
           reset = False
@@ -137,3 +142,40 @@ def maximize(transferEnvironment):
             print("Maximizer Exits ...")
             break
     return params
+
+
+def gradient_descent_optimizer(env, iterations=100, learning_rate=0.1, exploration_rate=0.1):
+    max_action, count = 9, 0
+    current_action = env.action_space.sample()  # Start with a random action
+    last_reward = None
+    last_action = None
+    reward_list=[]
+    action_list=[]
+    print("gradient_descent_optimizer Starting ...")
+    while True:
+        # Take the current action and observe the reward
+        action_list.append(current_action)
+        _, reward, done, _ = env.step(int(current_action))
+        reward_list.append(reward)
+        if done:
+            print("Gradient Descent Optimizer Exits ...")
+            break   # Exit if the environment says we're done
+        if last_action is not None:
+            # Calculate the approximate gradient based on the last action and reward
+            gradient = reward - last_reward
+            # Exploitation: Adjust action based on the observed gradient
+            action_change = -np.sign(gradient)
+            next_action = (last_action + learning_rate * action_change)
+            # Make sure the action is within the range of the action space
+            next_action =min(max_action-1, max(0, next_action))
+        else:
+            # For the first iteration, just choose a random next action
+            next_action = env.action_space.sample()
+
+        # Update for the next iteration
+        last_reward = reward
+        last_action = current_action
+        current_action = next_action
+
+        print(f"Current Action: {current_action}, Reward: {reward}")
+    return (action_list, reward_list)

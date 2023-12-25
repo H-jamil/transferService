@@ -59,7 +59,8 @@ if __name__ == "__main__":
             message = f"lossRate: {lr}\n"
             try:
               conn.sendall(message.encode())
-            except BrokenPipeError:
+            # except BrokenPipeError:
+            except:
               print("Broken pipe error")
               break
             t2 = time.time()
