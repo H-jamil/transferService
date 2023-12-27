@@ -143,6 +143,18 @@ def maximize(transferEnvironment):
             break
     return params
 
+def minimize(transferEnvironment):
+    max_action, count = transferEnvironment.action_space.n, 0
+    print(f"Maximum Action: {max_action}")
+    params = []
+    while True:
+        state, score, done, _ = transferEnvironment.step(1)
+        params.append(1)
+        if done:
+            print("Minimizer Exits ...")
+            break
+    return params
+
 
 def gradient_descent_optimizer(env, iterations=100, learning_rate=0.1, exploration_rate=0.1):
     max_action, count = 9, 0

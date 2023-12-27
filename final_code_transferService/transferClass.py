@@ -9,6 +9,12 @@ import logging as log
 import time
 from transferService import transferService
 from optimizer_gd import *
+import os
+from stable_baselines3 import PPO
+from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
+from stable_baselines3.common.monitor import Monitor
+from stable_baselines3.common.callbacks import BaseCallback, EvalCallback,CheckpointCallback,CallbackList
+
 
 class transferClass(gym.Env):
   metadata = {"render_modes": ["human"], "render_fps": 30}
@@ -53,9 +59,14 @@ class transferClass(gym.Env):
 
 
 def main(optimizer):
+    for handler in log.root.handlers[:]:
+        log.root.removeHandler(handler)
     log_FORMAT = '%(created)f -- %(levelname)s: %(message)s'
     extraString="logFile"
-    log_file = f"logFileDir/{optimizer}_{extraString}_{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}.log"
+    # Create the directory if it doesn't exist
+    directory = f"./logFileDir/{optimizer}/"
+    os.makedirs(directory, exist_ok=True)
+    log_file = f"logFileDir/{optimizer}/{optimizer}_{extraString}_{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}.log"
     log.basicConfig(
         format=log_FORMAT,
         datefmt='%m/%d/%Y %I:%M:%S %p',
@@ -74,29 +85,54 @@ def main(optimizer):
     SERVER_PORT = 8080
     transfer_service = transferService(REMOTE_IP, REMOTE_PORT, INTERVAL, INTERFACE, SERVER_IP, SERVER_PORT, optimizer, log)
     env = transferClass(transfer_service)
-    initial_state = env.reset()
 
     if optimizer == 'GD':
+        initial_state = env.reset()
         optimal_actions = gradient_opt(env)
         print("Optimal Actions: ", optimal_actions)
+
     elif optimizer == 'BO':
+        initial_state = env.reset()
         best_params = bayes_optimizer(env)
         print(f"Optimal parameters: {best_params}")
+
     elif optimizer == 'RL':
-        # Assuming you have a function for RL optimizer
-        rl_results = rl_optimizer(env)  # Replace with actual RL optimizer function
-        print("RL Results: ", rl_results)
+        # env = Monitor(env)  # Wrap the environment with Monitor for training statistics
+        env = DummyVecEnv([lambda: env])  # Vectorized environments allow for parallelism
+        env = VecNormalize(env, norm_obs=True, norm_reward=True)
+        obs = env.reset()
+        model = PPO.load("./ppo_best_model/best_model.zip")
+        done = False
+        episode_reward = 0
+        while not done:
+          action, _ = model.predict(obs, deterministic=True)
+          obs, reward, done, info = env.step(action)
+          print("obs: ", obs,".... reward: ",reward)
+          episode_reward += reward[0]
+        print(f"Episode reward: {episode_reward}")
+
+    elif optimizer == 'MIN':
+        initial_state = env.reset()
+        taken_actions = minimize(env)
+        print("Taken Actions: ", taken_actions)
+
     else:  # Default to 'max'
+        initial_state = env.reset()
         taken_actions = maximize(env)
         print("Taken Actions: ", taken_actions)
 
     env.close()
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2 or sys.argv[1] not in ['gd', 'bo', 'rl', 'max']:
-        print("Usage: python script.py <optimizer>")
-        print("Optimizer must be one of: 'gd', 'bo', 'rl', 'max'")
-        sys.exit(1)
+    # if len(sys.argv) != 2 or sys.argv[1] not in ['gd', 'bo', 'rl', 'max', 'min']:
+    #     print("Usage: python script.py <optimizer>")
+    #     print("Optimizer must be one of: 'gd', 'bo', 'rl', 'max', 'min'")
+    #     sys.exit(1)
 
-    optimizer = sys.argv[1].upper()
-    main(optimizer)
+    # optimizer = sys.argv[1].upper()
+    optimizers = ['GD', 'BO', 'RL', 'MAX', 'MIN']
+    for i in range(10):
+        for optimizer in optimizers:
+            print(f"Iteration: {i}, {optimizer} running")
+            main(optimizer)
+            time.sleep(2)
