@@ -18,13 +18,14 @@ from stable_baselines3.common.callbacks import BaseCallback, EvalCallback,Checkp
 
 class transferClass(gym.Env):
   metadata = {"render_modes": ["human"], "render_fps": 30}
-  def __init__(self,transferServiceObject):
+  def __init__(self,transferServiceObject,optimizer):
     super().__init__()
     self.action_array=[(1,1),(1,1),(2,2),(3,3),(4,4),(5,5),(6,6),(7,7),(8,8)]
     self.transfer_service = transferServiceObject
     self.action_space =spaces.Discrete(9) # example action space
     self.observation_space = spaces.Box(low=0, high=np.inf, shape=(40,), dtype=np.float32) # example observation space
     self.current_observation = np.zeros(40,) # initialize current observation
+    self.optimizer=optimizer
 
   def reset(self):
     self.current_observation = self.transfer_service.reset() # get initial observation
@@ -34,8 +35,12 @@ class transferClass(gym.Env):
     # perform action using transfer_service
     print("Env step action ",action, type(action))
     new_observation,reward=self.transfer_service.step(self.action_array[action][0],self.action_array[action][1])
+    # if self.optimizer=='RL':
+    #   reward = np.round(reward * (-1))
     if reward==1000000:
       done=True
+    # if reward==-1000000:
+    #   done=True
     else:
       done=False
     self.current_observation=new_observation
@@ -48,14 +53,14 @@ class transferClass(gym.Env):
     if params[0] > 8:
       params[0] = 8
     obs,score_b,done_b,__=self.step(params[0])
-    print("Bayes Step Observations: ",obs)
-    return score_b
+    print("Bayes Step Observations: ", obs)
+    return np.round(score_b * (-1))
 
   def render(self, mode="human"):
     pass
 
   def close(self):
-    self.transfer_service.cleanup() # close transfer_service
+    return self.transfer_service.cleanup() # close transfer_service
 
 
 def main(optimizer):
@@ -84,7 +89,7 @@ def main(optimizer):
     SERVER_IP = '127.0.0.1'
     SERVER_PORT = 8080
     transfer_service = transferService(REMOTE_IP, REMOTE_PORT, INTERVAL, INTERFACE, SERVER_IP, SERVER_PORT, optimizer, log)
-    env = transferClass(transfer_service)
+    env = transferClass(transfer_service,optimizer)
 
     if optimizer == 'GD':
         initial_state = env.reset()
@@ -131,7 +136,9 @@ if __name__ == "__main__":
 
     # optimizer = sys.argv[1].upper()
     optimizers = ['GD', 'BO', 'RL', 'MAX', 'MIN']
-    for i in range(10):
+    # optimizers = ['MAX', 'MIN']
+    # optimizers = ['RL']
+    for i in range(0,20):
         for optimizer in optimizers:
             print(f"Iteration: {i}, {optimizer} running")
             main(optimizer)

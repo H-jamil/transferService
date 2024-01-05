@@ -362,6 +362,7 @@ class transferService:
       self.runtime_status.value=1
       # Print a message indicating cleanup is done
       print("Cleanup completed!")
+      return 0
 
 if __name__ == "__main__":
   log_FORMAT = '%(created)f -- %(levelname)s: %(message)s'

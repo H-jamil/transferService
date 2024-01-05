@@ -16,7 +16,7 @@ def gradient_opt(transferEnvironment):
 
     while True:
         state, score, done, _ = transferEnvironment.step(ccs[-1])
-        values.append(score)
+        values.append(np.round(score * (-1)))
         if done:
             print("GD Optimizer Exits ...")
             break
@@ -26,7 +26,7 @@ def gradient_opt(transferEnvironment):
 
         next_action = (ccs[-1] + 1) % max_action
         state, score, done, _ = transferEnvironment.step(next_action)
-        values.append(score)
+        values.append(np.round(score * (-1)))
         if done:
             print("GD Optimizer Exits ...")
             break
@@ -99,7 +99,7 @@ def bayes_optimizer(transferEnvironment):
               count, res.x, res.fun, np.round(t2-t1, 2)))
 
       last_value = optimizer.yi[-1]
-      if last_value == 1000000:
+      if last_value == -1000000:
           print("Bayseian Optimizer Exits ...")
           break
     #   print("Last Value: ", last_value)
