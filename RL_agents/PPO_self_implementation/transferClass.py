@@ -33,7 +33,7 @@ class transferClass(gym.Env):
 
   def step(self, action):
     # perform action using transfer_service
-    print("Env step action ",action, type(action))
+    # print("Env step action ",action, type(action))
     new_observation,reward=self.transfer_service.step(self.action_array[action][0],self.action_array[action][1])
     # if self.optimizer=='RL':
     #   reward = np.round(reward * (-1))
@@ -44,7 +44,7 @@ class transferClass(gym.Env):
     else:
       done=False
     self.current_observation=new_observation
-    print("Env step observations ",new_observation)
+    # print("Env step observations ",new_observation)
     return new_observation, reward, done, {}
 
   def bayes_step(self,action):
@@ -53,7 +53,8 @@ class transferClass(gym.Env):
     if params[0] > 8:
       params[0] = 8
     obs,score_b,done_b,__=self.step(params[0])
-    print("Bayes Step Observations: ", obs)
+    # print("Bayes Step Observations: ", obs)
+    print("Bayes Step Score: ", score_b)
     return np.round(score_b * (-1))
 
   def render(self, mode="human"):
@@ -78,11 +79,11 @@ def main(optimizer):
         level=log.INFO,
         handlers=[
             log.FileHandler(log_file),
-            log.StreamHandler()
+            # log.StreamHandler()
         ]
     )
 
-    REMOTE_IP = "129.114.109.231"
+    REMOTE_IP = "129.114.109.104"
     REMOTE_PORT = "80"
     INTERVAL = 1
     INTERFACE = "eno1"
