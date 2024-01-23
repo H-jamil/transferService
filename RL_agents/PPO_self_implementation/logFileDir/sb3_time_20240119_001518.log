@@ -1,0 +1,160 @@
+Gen address: 0x5630351cac30
+Gen address: 0x5630351cc410
+Gen address: 0x5630351cc680
+Gen address: 0x5630351cc740
+Gen address: 0x5630351cd7e0
+Gen address: 0x5630351cf420
+Gen address: 0x5630351cb790
+Gen address: 0x5630351da7a0
+Gen address: 0x5630351da860
+Gen address: 0x5630351cb850
+Gen address: 0x5630351cb910
+Gen address: 0x5630351d9da0
+Gen address: 0x5630351d9e60
+Gen address: 0x5630351d9f20
+Gen address: 0x5630351d6ac0
+Gen address: 0x5630351d98a0
+Gen address: 0x5630351d6b80
+Gen address: 0x5630351d6c40
+Gen address: 0x5630351d3040
+Gen address: 0x5630351d8860
+Gen address: 0x5630351d6d00
+Gen address: 0x5630351d8920
+Gen address: 0x5630351d8700
+Gen address: 0x5630351d3100
+Gen address: 0x5630351d31c0
+Gen address: 0x5630351d3440
+Gen address: 0x5630351d3530
+Gen address: 0x5630351d39c0
+Gen address: 0x5630351d3a80
+Gen address: 0x5630351d96a0
+Gen address: 0x5630351d3b40
+Gen address: 0x5630351d3c50
+Main Thread changed parallelism to 8 and concurrency to 8
+Concurrent Thread 0 creating all parallel threads (status: paused)
+Concurrent Thread 3 creating all parallel threads (status: paused)
+Concurrent Thread 1 creating all parallel threads (status: paused)
+Concurrent Thread 4 creating all parallel threads (status: paused)
+Concurrent Thread 6 creating all parallel threads (status: paused)
+Concurrent Thread 2 creating all parallel threads (status: paused)
+Concurrent Thread 5 creating all parallel threads (status: paused)
+Concurrent Thread 9 creating all parallel threads (status: paused)
+Concurrent Thread 15 creating all parallel threads (status: paused)
+Concurrent Thread 10 creating all parallel threads (status: paused)
+Concurrent Thread 12 creating all parallel threads (status: paused)
+Concurrent Thread 7 creating all parallel threads (status: paused)
+Concurrent Thread 11 creating all parallel threads (status: paused)
+Concurrent Thread 13 creating all parallel threads (status: paused)
+Concurrent Thread 8 creating all parallel threads (status: paused)
+Concurrent Thread 14 creating all parallel threads (status: paused)
+Concurrent Thread 16 creating all parallel threads (status: paused)
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.96 Gbps
+Monitor Thread Throughput : 15.36 Gbps
+Monitor Thread Throughput : 3.84 Gbps
+Monitor Thread Throughput : 10.24 Gbps
+Monitor Thread Throughput : 6.72 Gbps
+Main Thread changed parallelism to 5 and concurrency to 5
+Monitor Thread Throughput : 7.36 Gbps
+Monitor Thread Throughput : 8.96 Gbps
+Monitor Thread Throughput : 5.12 Gbps
+Monitor Thread Throughput : 1.28 Gbps
+Monitor Thread Throughput : 1.60 Gbps
+Monitor Thread Throughput : 4.80 Gbps
+Main Thread changed parallelism to 5 and concurrency to 5
+Monitor Thread Throughput : 2.24 Gbps
+Monitor Thread Throughput : 4.16 Gbps
+Monitor Thread Throughput : 3.20 Gbps
+Monitor Thread Throughput : 2.24 Gbps
+Monitor Thread Throughput : 1.92 Gbps
+Monitor Thread Throughput : 4.48 Gbps
+Main Thread changed parallelism to 5 and concurrency to 5
+Monitor Thread Throughput : 1.92 Gbps
+Monitor Thread Throughput : 3.20 Gbps
+Monitor Thread Throughput : 2.24 Gbps
+Monitor Thread Throughput : 3.52 Gbps
+Monitor Thread Throughput : 2.88 Gbps
+Monitor Thread Throughput : 2.24 Gbps
+Main Thread changed parallelism to 5 and concurrency to 5
+Monitor Thread Throughput : 2.56 Gbps
+Monitor Thread Throughput : 1.92 Gbps
+Monitor Thread Throughput : 2.24 Gbps
+Monitor Thread Throughput : 4.80 Gbps
+Monitor Thread Throughput : 1.28 Gbps
+Monitor Thread Throughput : 3.52 Gbps
+Main Thread changed parallelism to 5 and concurrency to 5
+Monitor Thread Throughput : 3.52 Gbps
+Monitor Thread Throughput : 1.60 Gbps
+Monitor Thread Throughput : 4.16 Gbps
+Monitor Thread Throughput : 2.24 Gbps
+Monitor Thread Throughput : 3.20 Gbps
+Monitor Thread Throughput : 4.16 Gbps
+Main Thread changed parallelism to 5 and concurrency to 5
+Monitor Thread Throughput : 6.08 Gbps
+Monitor Thread Throughput : 5.76 Gbps
+Monitor Thread Throughput : 3.84 Gbps
+Monitor Thread Throughput : 3.84 Gbps
+Monitor Thread Throughput : 6.08 Gbps
+Monitor Thread Throughput : 5.76 Gbps
+Main Thread changed parallelism to 5 and concurrency to 5
+Monitor Thread Throughput : 5.44 Gbps
+Monitor Thread Throughput : 3.52 Gbps
+Monitor Thread Throughput : 4.16 Gbps
+Monitor Thread Throughput : 4.16 Gbps
+Monitor Thread Throughput : 4.80 Gbps
+Monitor Thread Throughput : 3.52 Gbps
+Main Thread changed parallelism to 5 and concurrency to 5
+Monitor Thread Throughput : 6.40 Gbps
+Monitor Thread Throughput : 6.72 Gbps
+Monitor Thread Throughput : 5.76 Gbps
+Monitor Thread Throughput : 7.68 Gbps
+Monitor Thread Throughput : 6.72 Gbps
+Monitor Thread Throughput : 2.88 Gbps
+Main Thread changed parallelism to 5 and concurrency to 5
+Monitor Thread Throughput : 6.40 Gbps
+Monitor Thread Throughput : 6.72 Gbps
+Monitor Thread Throughput : 5.44 Gbps
+Concurrent Thread 4 shutting down because there are no files to download
+Parent ID : 4 thread ID: 0, shutting itself off
+Parent ID : 4 thread ID: 1, shutting itself off
+Parent ID : 4 thread ID: 2, shutting itself off
+Parent ID : 4 thread ID: 4, shutting itself off
+Parent ID : 4 thread ID: 3, shutting itself off
+Monitor Thread Throughput : 5.44 Gbps
+Monitor Thread Throughput : 3.20 Gbps
+Concurrent Thread 3 shutting down because there are no files to download
+Parent ID : 3 thread ID: 0, shutting itself off
+Parent ID : 3 thread ID: 4, shutting itself off
+Parent ID : 3 thread ID: 2, shutting itself off
+Parent ID : 3 thread ID: 1, shutting itself off
+Parent ID : 3 thread ID: 3, shutting itself off
+Concurrent Thread 1 shutting down because there are no files to download
+Parent ID : 1 thread ID: 0, shutting itself off
+Parent ID : 1 thread ID: 1, shutting itself off
+Parent ID : 1 thread ID: 2, shutting itself off
+Parent ID : 1 thread ID: 4, shutting itself off
+Parent ID : 1 thread ID: 3, shutting itself off
+Concurrent Thread 0 shutting down because there are no files to download
+Parent ID : 0 thread ID: 2, shutting itself off
+Parent ID : 0 thread ID: 1, shutting itself off
+Parent ID : 0 thread ID: 3, shutting itself off
+Parent ID : 0 thread ID: 0, shutting itself off
+Parent ID : 0 thread ID: 4, shutting itself off
+Concurrent Thread 2 shutting down because there are no files to download
+Parent ID : 2 thread ID: 3, shutting itself off
+Parent ID : 2 thread ID: 4, shutting itself off
+Parent ID : 2 thread ID: 2, shutting itself off
+Parent ID : 2 thread ID: 1, shutting itself off
+Parent ID : 2 thread ID: 0, shutting itself off
+Concurrent Thread 6 shutting down because there are no files to download
+Concurrent Thread 9 shutting down because there are no files to download
+Concurrent Thread 15 shutting down because there are no files to download
+Concurrent Thread 10 shutting down because there are no files to download
+Concurrent Thread 12 shutting down because there are no files to download
+Concurrent Thread 11 shutting down because there are no files to download
+Concurrent Thread 7 shutting down because there are no files to download
+Concurrent Thread 5 shutting down because there are no files to download
+Concurrent Thread 13 shutting down because there are no files to download
+Concurrent Thread 8 shutting down because there are no files to download
+Concurrent Thread 16 shutting down because there are no files to download
+Concurrent Thread 14 shutting down because there are no files to download

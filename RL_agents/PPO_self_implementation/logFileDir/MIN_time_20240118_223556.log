@@ -1,0 +1,601 @@
+Gen address: 0x55bb11777c30
+Gen address: 0x55bb11779410
+Gen address: 0x55bb11779680
+Gen address: 0x55bb11779740
+Gen address: 0x55bb1177a7e0
+Gen address: 0x55bb1177c420
+Gen address: 0x55bb11778790
+Gen address: 0x55bb117877a0
+Gen address: 0x55bb11787860
+Gen address: 0x55bb11778850
+Gen address: 0x55bb11778910
+Gen address: 0x55bb11786da0
+Gen address: 0x55bb11786e60
+Gen address: 0x55bb11786f20
+Gen address: 0x55bb11783ac0
+Gen address: 0x55bb117868a0
+Gen address: 0x55bb11783b80
+Gen address: 0x55bb11783c40
+Gen address: 0x55bb11780040
+Gen address: 0x55bb11785860
+Gen address: 0x55bb11783d00
+Gen address: 0x55bb11785920
+Gen address: 0x55bb11785700
+Gen address: 0x55bb11780100
+Gen address: 0x55bb117801c0
+Gen address: 0x55bb11780440
+Gen address: 0x55bb11780530
+Gen address: 0x55bb117809c0
+Gen address: 0x55bb11780a80
+Gen address: 0x55bb117866a0
+Gen address: 0x55bb11780b40
+Gen address: 0x55bb11780c50
+Concurrent Thread 1 creating all parallel threads (status: paused)
+Main Thread changed parallelism to 1 and concurrency to 1
+Concurrent Thread 2 creating all parallel threads (status: paused)
+Concurrent Thread 0 creating all parallel threads (status: paused)
+Concurrent Thread 14 creating all parallel threads (status: paused)
+Concurrent Thread 5 creating all parallel threads (status: paused)
+Concurrent Thread 3 creating all parallel threads (status: paused)
+Concurrent Thread 6 creating all parallel threads (status: paused)
+Concurrent Thread 4 creating all parallel threads (status: paused)
+Concurrent Thread 10 creating all parallel threads (status: paused)
+Concurrent Thread 7 creating all parallel threads (status: paused)
+Concurrent Thread 9 creating all parallel threads (status: paused)
+Concurrent Thread 13 creating all parallel threads (status: paused)
+Concurrent Thread 16 creating all parallel threads (status: paused)
+Concurrent Thread 8 creating all parallel threads (status: paused)
+Concurrent Thread 11 creating all parallel threads (status: paused)
+Concurrent Thread 12 creating all parallel threads (status: paused)
+Concurrent Thread 15 creating all parallel threads (status: paused)
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.64 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Main Thread changed parallelism to 1 and concurrency to 1
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread Throughput : 0.32 Gbps
+Monitor Thread Throughput : 0.00 Gbps
+Monitor Thread T
