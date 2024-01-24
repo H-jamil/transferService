@@ -1,0 +1,2 @@
+1705181061.267870 -- ERROR: Task was destroyed but it is pending!
+task: <Task pending name='Task-2' coro=<Kernel.poll_control_queue() running at /home/cc/.pyenv/versions/3.10.1/envs/transferService/lib/python3.10/site-packages/ipykernel/kernelbase.py:284> wait_for=<Future pending cb=[Task.task_wakeup()]> cb=[_chain_future.<locals>._call_set_state() at /home/cc/.pyenv/versions/3.10.1/lib/python3.10/asyncio/futures.py:391]>

@@ -17,51 +17,85 @@ import torch as th
 import torch.nn as nn
 from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
 
-# class NormalizedEnv(gym.Wrapper):
-#     def __init__(self, env, alpha=0.99, max_abs_reward=None):
-#         super(NormalizedEnv, self).__init__(env)
-#         self.env = env
-#         self.observation_space = env.observation_space
-#         self.action_space = env.action_space
+# class NormalizeObservationAndRewardWrapper(gym.Wrapper):
+#     def __init__(self, env, obs_mean, obs_std, reward_scale=1.0):
+#         super().__init__(env)
+#         self.obs_mean = obs_mean
+#         self.obs_std = obs_std
+#         self.reward_scale = reward_scale
+#         self.old_score=0
+#         self.score_difference_positive_threadhold=2
+#         self.score_difference_negative_threadhold=-2
 
-#         self.alpha = alpha  # Weight factor for exponential moving average
-#         self.obs_mean = np.zeros(self.observation_space.shape)
-#         self.obs_var = np.ones(self.observation_space.shape)
-#         self.num_steps = 0  # Count of steps to handle initial variance calculation
-
-#         self.max_abs_reward = max_abs_reward if max_abs_reward is not None else 10000
-
-#     def update_obs_stats(self, observation):
-#         self.num_steps += 1
-#         last_mean = self.obs_mean.copy()
-#         self.obs_mean = self.alpha * self.obs_mean + (1 - self.alpha) * observation
-#         self.obs_var = self.alpha * self.obs_var + (1 - self.alpha) * np.square(observation - last_mean)
-
-#         if self.num_steps < 100:
-#             # Adjust variance for the initial steps
-#             self.obs_var = self.obs_var / (1 - self.alpha ** self.num_steps)
-
-#     def normalize_observation(self, observation):
-#         obs_std = np.sqrt(self.obs_var)
-#         normalized_obs = (observation - self.obs_mean) / obs_std
-#         return normalized_obs
-
-#     def normalize_reward(self, reward):
-#         normalized_reward = reward / self.max_abs_reward
-#         return normalized_reward
+#     def reset(self, **kwargs):
+#         observation = self.env.reset(**kwargs)
+#         return observation
 
 #     def step(self, action):
+#         # observation, reward, done, _, info = self.env.step(action)
 #         observation, reward, done, info = self.env.step(action)
-#         self.update_obs_stats(observation)
-#         normalized_observation = self.normalize_observation(observation)
-#         normalized_reward = self.normalize_reward(reward)
-#         return normalized_observation, normalized_reward, done, info
+#         normalized_obs = self.normalize_observation(observation)
+#         if reward != 1000000:
+#         #   normalized_reward = reward * self.reward_scale
+#             score_difference = reward - self.old_score
+#             self.old_score = reward
+#             if score_difference > self.score_difference_positive_threadhold:
+#               normalized_reward = 1
+#             elif score_difference < self.score_difference_negative_threadhold:
+#               normalized_reward = -3
+#             else:
+#               normalized_reward = 0
+#         else:
+#           normalized_reward = 1
+#         # return normalized_obs, normalized_reward, done, _ ,info
+#         return normalized_obs, normalized_reward, done, info
 
-#     def reset(self):
-#         observation = self.env.reset()
-#         self.update_obs_stats(observation)
-#         normalized_observation = self.normalize_observation(observation)
-#         return normalized_observation
+#     def normalize_observation(self, observation):
+#       # try:
+#       #   return (observation - self.obs_mean) / self.obs_std
+#       # except:
+#       #   return np.zeros(40,)
+#       EPSILON = 1e-10  # Small constant to prevent division by zero
+#       normalized_observation = (observation - self.obs_mean) / (self.obs_std + EPSILON)
+#       return normalized_observation
+class NormalizeObservationAndRewardWrapper(gym.Wrapper):
+    def __init__(self, env, obs_min, obs_max, reward_scale=1.0):
+        super().__init__(env)
+        self.obs_min = obs_min
+        self.obs_max = obs_max
+        self.reward_scale = reward_scale
+        self.old_score = 0
+        self.score_difference_positive_threshold = 5
+        self.score_difference_negative_threshold = -1
+
+    def reset(self, **kwargs):
+        observation = self.env.reset(**kwargs)
+        return self.normalize_observation(observation)
+
+    def step(self, action):
+        observation, reward, done, info = self.env.step(action)
+        normalized_obs = self.normalize_observation(observation)
+
+        if reward != 1000000:
+            score_difference = reward - self.old_score
+            self.old_score = reward
+            if score_difference > self.score_difference_positive_threshold:
+                # normalized_reward = 1
+                normalized_reward = score_difference
+            elif score_difference < self.score_difference_negative_threshold:
+                # normalized_reward = -1
+                normalized_reward = score_difference
+            else:
+                normalized_reward = 0
+        else:
+            normalized_reward = 1
+
+        return normalized_obs, normalized_reward, done, info
+
+    def normalize_observation(self, observation):
+        EPSILON = 1e-10  # Small constant to prevent division by zero
+        normalized_observation = (observation - self.obs_min) / (self.obs_max - self.obs_min + EPSILON)
+        return normalized_observation
 
 
 # Add the parent directory to sys.path
@@ -73,11 +107,9 @@ from transferClass import *
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 from stable_baselines3.common.monitor import Monitor
 
-if __name__ == '__main__':
-    # env_string = 'CartPole-v0'
+def main():
     env_string = 'transferService'
-    # env = gym.make(env_string)
-    optimizer='ppo_test'
+    optimizer='ppo_sb3_max_min'
     for handler in log.root.handlers[:]:
       log.root.removeHandler(handler)
     log_FORMAT = '%(created)f -- %(levelname)s: %(message)s'
@@ -92,10 +124,10 @@ if __name__ == '__main__':
         level=log.INFO,
         handlers=[
             log.FileHandler(log_file),
-            log.StreamHandler()
+            # log.StreamHandler()
         ]
     )
-    REMOTE_IP = "129.114.109.231"
+    REMOTE_IP = "129.114.109.46"
     REMOTE_PORT = "80"
     INTERVAL = 1
     INTERFACE = "eno1"
@@ -103,19 +135,22 @@ if __name__ == '__main__':
     SERVER_PORT = 8080
     transfer_service = transferService(REMOTE_IP, REMOTE_PORT, INTERVAL, INTERFACE, SERVER_IP, SERVER_PORT, optimizer, log)
     env = transferClass(transfer_service,optimizer)
-    env = Monitor(env)  # Wrap with Monitor for advanced logging
-    env = DummyVecEnv([lambda: env])  # Optional: Use a vectorized environment
-    env = VecNormalize(env, norm_obs=True, norm_reward=True)
-    # custom_policy = ActorCriticPolicy(
-    #     observation_space=env.observation_space,
-    #     action_space=env.action_space,
-    #     lr_schedule=lambda _: 0.0003,  # Learning rate, adjust as needed
-    #     features_extractor_class=CustomActorCriticNetwork,
-    #     features_extractor_kwargs={"features_dim": 256}
-    # )
+
+    data = np.load('obs_stats.npz')
+    obs_mean = data['mean']
+    obs_std = data['std']
+
+    print("obs_mean after loading", obs_mean)
+    print("obs_std after loading", obs_std)
+
+    env = NormalizeObservationAndRewardWrapper(env, obs_mean, obs_std, reward_scale=1.0)
+
     policy_kwargs = dict(activation_fn=th.nn.ReLU,net_arch=[{'pi': [128, 128], 'vf': [128, 128]}])
     # model = PPO("MlpPolicy", env=env, policy_kwargs=policy_kwargs, verbose=1,tensorboard_log="./ppo_tensorboard/",ent_coef=0.01)
-    model = PPO.load("./ppo_checkpoints/ppo_model_4000_steps.zip")
+
+
+    # model = PPO.load("./ppo_checkpoints/ppo_model_4000_steps.zip")
+    model = PPO.load("./ppo_best_model/best_model.zip")
     done = False
     episode_reward = 0
     obs = env.reset()
@@ -125,77 +160,94 @@ if __name__ == '__main__':
         action, _ = model.predict(obs, deterministic=True)
         # action = env.action_space.sample()
         print("action: ",action)
-        obs, reward, done, info = env.step([action])
+        # obs, reward, done, info = env.step([action])
+        obs, reward, done, info = env.step(action)
         print("obs: ", obs,".... reward: ",reward)
-        episode_reward += reward[0]
+        # episode_reward += reward[0]
+        episode_reward += reward
 
     env.close()
     print(f"Episode reward: {episode_reward}")
 
+if __name__ == '__main__':
+  # run_num = 0
+  # while run_num < 5:
+  #   main()
+  #   run_num += 1
 
-    # model = PPO(
-    #     policy="MlpPolicy",
-    #     env=env,
-    #     policy_kwargs=policy_kwargs,
-    #     verbose=1,
-    #     tensorboard_log="./ppo_tensorboard/",
-    #     ent_coef=0.01
-    # )
 
-  #   eval_callback = EvalCallback(env, best_model_save_path='./ppo_best_model/',
-  #                              log_path='./ppo_logs/', eval_freq=1000,
-  #                              deterministic=True, render=False)
+    env_string = 'transferService'
+    optimizer='ppo_sb3_max_min'
+    for handler in log.root.handlers[:]:
+      log.root.removeHandler(handler)
+    log_FORMAT = '%(created)f -- %(levelname)s: %(message)s'
+    extraString="logFile"
+    # Create the directory if it doesn't exist
+    directory = f"./logFileDir/{optimizer}/"
+    os.makedirs(directory, exist_ok=True)
+    log_file = f"logFileDir/{optimizer}/{optimizer}_{extraString}_{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}.log"
+    log.basicConfig(
+        format=log_FORMAT,
+        datefmt='%m/%d/%Y %I:%M:%S %p',
+        level=log.INFO,
+        handlers=[
+            log.FileHandler(log_file),
+            # log.StreamHandler()
+        ]
+    )
+    REMOTE_IP = "129.114.109.46"
+    REMOTE_PORT = "80"
+    INTERVAL = 1
+    INTERFACE = "eno1"
+    SERVER_IP = '127.0.0.1'
+    SERVER_PORT = 8080
+    transfer_service = transferService(REMOTE_IP, REMOTE_PORT, INTERVAL, INTERFACE, SERVER_IP, SERVER_PORT, optimizer, log)
+    env = transferClass(transfer_service,optimizer)
 
-  # # Callback for saving checkpoints every 1000 timesteps
-  #   checkpoint_callback = CheckpointCallback(save_freq=1000, save_path='./ppo_checkpoints/',
-  #                                          name_prefix='ppo_model')
+    data = np.load('obs_stats.npz')
+    obs_min = data['min']
+    obs_max = data['max']
 
-  # # Combine both callbacks
-  #   callback = CallbackList([checkpoint_callback, eval_callback])
-  #   model.learn(total_timesteps=10000, callback=callback)
+    print("obs_min after loading", obs_min)
+    print("obs_max after loading", obs_max)
 
-  #   # N = 20
-  #   # batch_size = 5
-  #   # n_epochs = 4
-  #   # alpha = 0.0003
-  #   # writer = SummaryWriter(f'runs/_ppo_{env_string}_{alpha}_{n_epochs}_{batch_size}')
-  #   # agent = Agent(n_actions=env.action_space.n, batch_size=batch_size,
-  #   #                 alpha=alpha, n_epochs=n_epochs,
-  #   #                 input_dims=env.observation_space.shape,writer=writer)
-  #   # n_games = 300
+    env = NormalizeObservationAndRewardWrapper(env, obs_min, obs_max, reward_scale=1.0)
 
-  #   # figure_file ='plots/transfer_ppo_300.png'
+    policy_kwargs = dict(activation_fn=th.nn.ReLU,net_arch=[{'pi': [128, 128], 'vf': [128, 128]}])
+    model = PPO("MlpPolicy", env=env, policy_kwargs=policy_kwargs, verbose=1,tensorboard_log="./ppo_tensorboard/",ent_coef=0.01)
 
-  #   # best_score = env.reward_range[0]
-  #   # score_history = []
 
-  #   # learn_iters = 0
-  #   # avg_score = 0
-  #   # n_steps = 0
+  #   # model = PPO.load("./ppo_checkpoints/ppo_model_4000_steps.zip")
+  #   model = PPO.load("./ppo_best_model/best_model.zip")
+  #   done = False
+  #   episode_reward = 0
+  #   obs = env.reset()
 
-  #   # for i in range(n_games):
-  #   #     observation = env.reset()
-  #   #     done = False
-  #   #     score = 0
-  #   #     while not done:
-  #   #         action, prob, val = agent.choose_action(observation)
-  #   #         observation_, reward, done, info = env.step(action)
-  #   #         n_steps += 1
-  #   #         score += reward
-  #   #         agent.remember(observation, action, prob, val, reward, done)
-  #   #         if n_steps % N == 0:
-  #   #             agent.learn()
-  #   #             learn_iters += 1
-  #   #         observation = observation_
-  #   #     writer.add_scalar('reward/episode', score, i)
-  #   #     score_history.append(score)
-  #   #     avg_score = np.mean(score_history[-100:])
 
-  #   #     if avg_score > best_score:
-  #   #         best_score = avg_score
-  #   #         agent.save_models()
+  #   while not done:
+  #       action, _ = model.predict(obs, deterministic=True)
+  #       # action = env.action_space.sample()
+  #       print("action: ",action)
+  #       # obs, reward, done, info = env.step([action])
+  #       obs, reward, done, info = env.step(action)
+  #       print("obs: ", obs,".... reward: ",reward)
+  #       # episode_reward += reward[0]
+  #       episode_reward += reward
 
-  #   #     print('episode', i, 'score %.1f' % score, 'avg score %.1f' % avg_score,
-  #   #             'time_steps', n_steps, 'learning_steps', learn_iters)
-  #   # x = [i+1 for i in range(len(score_history))]
-  #   # plot_learning_curve(x, score_history, figure_file)
+  #   env.close()
+  #   print(f"Episode reward: {episode_reward}")
+
+
+
+
+    eval_callback = EvalCallback(env, best_model_save_path='./ppo_best_model/',
+                               log_path='./ppo_logs/', eval_freq=100,
+                               deterministic=True, render=False)
+
+  # Callback for saving checkpoints every 1000 timesteps
+    checkpoint_callback = CheckpointCallback(save_freq=500, save_path='./ppo_checkpoints/',
+                                           name_prefix='ppo_model')
+
+  # Combine both callbacks
+    callback = CallbackList([checkpoint_callback, eval_callback])
+    model.learn(total_timesteps=10000, callback=callback)
