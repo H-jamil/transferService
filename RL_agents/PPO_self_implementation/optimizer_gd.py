@@ -62,7 +62,7 @@ def gradient_opt(transferEnvironment):
         next_cc = min(offered_load, max_action-1)
         print("Gradient: {0}, Gradient Change: {1}, Theta: {2}, Previous Action: {3}, Chosen Action: {4}".format(gradient, gradient_change, theta, ccs[-1], next_cc))
         ccs.append(next_cc)
-    print("Total Actions: ", count)
+    # print("Total Actions: ", count)
     return ccs
 
 def bayes_optimizer(transferEnvironment):

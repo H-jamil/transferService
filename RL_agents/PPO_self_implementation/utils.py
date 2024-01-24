@@ -413,12 +413,16 @@ class transferClass(gym_old.Env):
 
     def bayes_step(self,action):
         params = [1 if x<1 else int(np.round(x)) for x in action]
-        print("Bayes Step: ",params)
+        # print("Bayes Step: ",params)
         if params[0] > 8:
             params[0] = 8
         obs,score_b,done_b,__=self.step(params[0])
-        print("Bayes Step Score: ", score_b)
-        return np.round(score_b * (-1))
+        # print("Bayes Step Score: ", score_b)
+        if done_b == False:
+            return np.round(score_b * (-1))
+        else:
+            return -1000000
+
 
     def render(self, mode="human"):
         pass
