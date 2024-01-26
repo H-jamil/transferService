@@ -14,6 +14,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 import pickle
+from transferService import transferService
+import copy
+import random
+import logging as log
+import time
+
 
 # class Actor(nn.Module):
 #     def __init__(self, state_dim, action_dim, net_width):
@@ -120,12 +126,11 @@ def str2bool(v):
         print('Wrong Input.')
         raise
 
-
 class NormalizeObservationAndRewardWrapper(gym.Wrapper):
-    def __init__(self, env, obs_min, obs_max, reward_scale=1.0):
+    def __init__(self, env, min_values=[0.0, 0.0, -75.0, 0.0, 0.0, 0.0, 1, 1],max_values = [19.52, 2.0, 18.0, 89.9, 110.0, 2.0, 8, 8], reward_scale=1.0):
         super().__init__(env)
-        self.obs_min = obs_min
-        self.obs_max = obs_max
+        self.min_values=np.array(min_values)
+        self.max_values=np.array(max_values)
         self.reward_scale = reward_scale
         self.old_score = 0
         self.score_difference_positive_threshold = 2
@@ -133,32 +138,48 @@ class NormalizeObservationAndRewardWrapper(gym.Wrapper):
 
     def reset(self, **kwargs):
         observation = self.env.reset(**kwargs)
-        return self.normalize_observation(observation)
+        # return self.normalize_observation(observation)
+        return observation.astype(np.float32)
 
     def step(self, action):
         observation, reward, done, info = self.env.step(action)
-        normalized_obs = self.normalize_observation(observation)
+        normalized_obs,result_array = self.normalize_observation(observation)
 
         if reward != 1000000:
+            # score_difference = reward - self.old_score
+            # reward_=np.mean(result_array)
             score_difference = reward - self.old_score
             self.old_score = reward
-            if score_difference > self.score_difference_positive_threshold:
-                # normalized_reward = 1
-                normalized_reward = max(-10, min(10, score_difference))
-            elif score_difference < self.score_difference_negative_threshold:
-                # normalized_reward = -1
-                normalized_reward = max(-10, min(10, score_difference))
-            else:
-                normalized_reward = 0
+            return normalized_obs, round(score_difference,3), done, info
         else:
-            normalized_reward = 20
-
-        return normalized_obs, normalized_reward, done, info
+            return normalized_obs, 0 , done, info
 
     def normalize_observation(self, observation):
-        EPSILON = 1e-10  # Small constant to prevent division by zero
-        normalized_observation = (observation - self.obs_min) / (self.obs_max - self.obs_min + EPSILON)
-        return normalized_observation
+        # print(f"observation: {observation}")
+        observation_df=np_array_to_df_with_reordered_columns(observation)
+        normalized_observation,result_array=normalize_and_flatten_real(observation_df,self.min_values,self.max_values)
+        return normalized_observation.astype(np.float32),result_array
+
+# Function to convert np array to a dataframe with specified columns and shape, with reordered columns
+def np_array_to_df_with_reordered_columns(arr, num_rows=5, num_cols=8, col_names=None):
+    if col_names is None:
+        col_names = ['Throughput', 'concurrency', 'parallelism', 'receiver_lr',
+                     'Score', 'RTT', 'Energy', 'sender_lr']
+
+    # Ensure that the array has the correct number of elements
+    if len(arr) != num_rows * num_cols:
+        raise ValueError("The numpy array does not have the correct number of elements")
+
+    # Reshape the array and create the dataframe
+    reshaped_array = arr.reshape((num_rows, num_cols))
+    df = pd.DataFrame(reshaped_array, columns=col_names)
+
+    # Reorder the columns
+    reordered_col_names = ['Throughput', 'receiver_lr', 'Score', 'RTT', 'Energy', 'sender_lr', 'concurrency', 'parallelism']
+    df = df[reordered_col_names]
+
+    return df
+
 
 def compute_observation_stats(env, num_samples=50):
     """
@@ -297,6 +318,16 @@ def sample_row_and_neighbors(df, column_name):
     # Select the range from start_index to end_index
     return df.iloc[start_index:end_index + 1]
 
+def normalize_and_flatten_real(df, min_values, max_values):
+    # Drop the specified columns
+    score_array = df['Score'].values
+    # Normalize each column
+    normalized_df = (df - min_values) / (max_values - min_values)
+    # Flatten the DataFrame to a single NumPy array
+    flattened_array = normalized_df.values.flatten()
+
+    return flattened_array,score_array
+
 def normalize_and_flatten(df, min_values, max_values):
     # Drop the specified columns
     df = df.drop(columns=['Time', 'CC'])
@@ -433,3 +464,94 @@ class transferClass(gym_old.Env):
 def custom_sort_key(item):
     # Sort single integers first, then tuples
     return (0, item) if isinstance(item, int) else (1, item)
+
+
+class transferClass_real(gym.Env):
+  metadata = {"render_modes": ["human"], "render_fps": 30}
+  def __init__(self,transferServiceObject,optimizer):
+    super().__init__()
+    self.action_array=[(1,1),(1,1),(2,2),(3,3),(4,4),(5,5),(6,6),(7,7),(8,8)]
+    self.transfer_service = transferServiceObject
+    self.action_space =spaces.Discrete(9) # example action space
+    self.observation_space = spaces.Box(low=0, high=np.inf, shape=(40,), dtype=np.float32) # example observation space
+    self.current_observation = np.zeros(40,) # initialize current observation
+    self.optimizer=optimizer
+
+  def reset(self):
+    self.current_observation = self.transfer_service.reset() # get initial observation
+    # self.current_observation = np.zeros(40,) # initialize current observation
+    return self.current_observation
+
+  def step(self, action):
+    new_observation,reward=self.transfer_service.step(self.action_array[action][0],self.action_array[action][1])
+    if reward==1000000:
+      done=True
+    else:
+      done=False
+    new_observation = new_observation.astype(np.float32)
+    self.current_observation=new_observation
+    return self.current_observation, reward, done, {}
+
+  def bayes_step(self,action):
+    params = [1 if x<1 else int(np.round(x)) for x in action]
+    print("Bayes Step: ",params)
+    if params[0] > 8:
+      params[0] = 8
+    obs,score_b,done_b,__=self.step(params[0])
+    print("Bayes Step Score: ", score_b)
+    return np.round(score_b * (-1),3)
+
+  def render(self, mode="human"):
+    pass
+
+  def close(self):
+    return self.transfer_service.cleanup() # close transfer_service
+
+def get_env(env_string='transferService', optimizer='simulator_trained', REMOTE_IP = "129.114.109.104", REMOTE_PORT = "80", INTERVAL = 1,INTERFACE = "eno1",SERVER_IP = '127.0.0.1',SERVER_PORT = 8080):
+    for handler in log.root.handlers[:]:
+      log.root.removeHandler(handler)
+    log_FORMAT = '%(created)f -- %(levelname)s: %(message)s'
+    extraString="logFile"
+    # Create the directory if it doesn't exist
+    directory = f"./logFileDir/{optimizer}/"
+    os.makedirs(directory, exist_ok=True)
+    log_file = f"logFileDir/{optimizer}/{optimizer}_{extraString}_{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}.log"
+    log.basicConfig(
+        format=log_FORMAT,
+        datefmt='%m/%d/%Y %I:%M:%S %p',
+        level=log.INFO,
+        handlers=[
+            log.FileHandler(log_file),
+            # log.StreamHandler()
+        ]
+    )
+    transfer_service = transferService(REMOTE_IP, REMOTE_PORT, INTERVAL, INTERFACE, SERVER_IP, SERVER_PORT, optimizer, log)
+    env = transferClass_real(transfer_service,optimizer)
+    return env
+
+def energy_monitor():
+    current_energy=0
+    try:
+        energy_old = read_energy()
+    except Exception as e:
+        print(f"Error reading initial energy: {e}")
+        energy_old = 0
+    time.sleep(1)  # Sleep for a bit before re-checking the condition
+    try:
+        energy_now = read_energy()
+    except Exception as e:
+        print(f"Error reading current energy: {e}")
+        energy_now = energy_old  # Use the old value if there's an error
+
+    current_energy = int((energy_now - energy_old) / 1000000)
+
+    return current_energy
+
+def read_energy():
+    try:
+        with open("/sys/class/powercap/intel-rapl:0/energy_uj", "r") as file:
+            energy = float(file.read())
+        return energy
+    except IOError as e:
+        print(f"Failed to open energy_uj file: {e}")
+        return 0

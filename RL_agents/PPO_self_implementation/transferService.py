@@ -319,7 +319,9 @@ class transferService:
         for entry in last_ten:
             score_list.append(entry[4])  # Assuming index 4 is for score
         # total_score = np.sum(score_list)
-        total_score = np.max(score_list)
+        # total_score = np.max(score_list)
+        total_score = np.mean(score_list)
+        # total_score = np.min(score_list)
         # Concatenate values from last 5 elements
         for entry in last_five:
             concatenated_values.extend(entry[:-1])  # Exclude the last value (time)

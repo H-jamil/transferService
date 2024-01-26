@@ -8,61 +8,48 @@ from scipy.optimize import minimize
 
 
 def gradient_opt(transferEnvironment):
-    max_action, count = transferEnvironment.action_space.n, 0
-    least_cost = float('inf')
+    max_action, count = transferEnvironment.action_space.n-1, 0
+    soft_lim,least_cost = max_action,0
     values = []
-    ccs = [1]  # starting action is chosen randomly
+    ccs = [2]
     theta = 0
+    update_rate = 0.2
 
     while True:
-        state, score, done, _ = transferEnvironment.step(ccs[-1])
-        values.append(np.round(score * (-1)))
+        state, score, done, _ = transferEnvironment.step(ccs[-1]-1)
+        # values.append(np.round(score * (-1)))
+        values.append(np.round(score * (1)))
+        # print(f"Action: {ccs[-1]-1}, Score: {score}")
         if done:
             print("GD Optimizer Exits ...")
             break
 
         if values[-1] < least_cost:
             least_cost = values[-1]
+            soft_limit = min(ccs[-1]+4, max_action)
 
-        next_action = (ccs[-1] + 1) % max_action
+        next_action = min((ccs[-1] + 1),max_action)
         state, score, done, _ = transferEnvironment.step(next_action)
-        values.append(np.round(score * (-1)))
+        # values.append(np.round(score * (-1)))
+        values.append(np.round(score * (1)))
+        # print(f"Action: {next_action}, Score: {score}")
+
         if done:
             print("GD Optimizer Exits ...")
             break
 
         if values[-1] < least_cost:
             least_cost = values[-1]
+            soft_limit = min(ccs[-1]+4, max_action)
 
         count += 2
 
-        gradient = (values[-1] - values[-2])
-
-        if np.abs(values[-2]) < 1e-9:  # Using a small threshold instead of checking for exact zero
-            gradient_change = 0
-        else:
-            gradient_change = np.abs(gradient/values[-2])
-
-        if gradient > 0:
-            if theta <= 0:
-                theta -= 1
-            else:
-                theta = -1
-        else:
-            if theta >= 0:
-                theta += 1
-            else:
-                theta = 1
-
-        update_cc = int(theta * gradient_change)
-        # next_cc = (ccs[-1] + update_cc) % max_action
-        offered_load = ccs[-1] + update_cc
-        if offered_load < 0:
-            offered_load = 1
-        next_cc = min(offered_load, max_action-1)
-        print("Gradient: {0}, Gradient Change: {1}, Theta: {2}, Previous Action: {3}, Chosen Action: {4}".format(gradient, gradient_change, theta, ccs[-1], next_cc))
-        ccs.append(next_cc)
-    # print("Total Actions: ", count)
+        gradient = (values[-1] - values[-2])/2
+        update_cc = np.ceil(update_rate * gradient)
+        next_cc = min(max(ccs[-1] + update_cc, 2), max_action)
+        # print("Gradient: {0}, Previous Action: {1}, Chosen Action: {2}".format(gradient, ccs[-1], next_cc))
+        ccs.append(int(next_cc))
+        print("Gradient: {0}, Previous Action: {1}, Chosen Action: {2}".format(gradient, ccs[-2], ccs[-1]))
     return ccs
 
 def bayes_optimizer(transferEnvironment):
@@ -152,6 +139,18 @@ def minimize(transferEnvironment):
         params.append(1)
         if done:
             print("Minimizer Exits ...")
+            break
+    return params
+
+def static(transferEnvironment, action):
+    max_action, count = transferEnvironment.action_space.n, 0
+    print(f"Static Action: {action}")
+    params = []
+    while True:
+        state, score, done, _ = transferEnvironment.step(action)
+        params.append(action)
+        if done:
+            print("Static Exits ...")
             break
     return params
 
