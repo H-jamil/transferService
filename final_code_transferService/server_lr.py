@@ -1,3 +1,6 @@
+#pythor server_lr.py 129.114.108.188 10.140.82.12 80
+
+
 import os
 import time
 import socket
@@ -15,10 +18,13 @@ def tcp_stats(REMOTE_IP):
                 parse_data = data[i].split(" ")
                 for entry in parse_data:
                   if "data_segs_out" in entry:
-                      sent += int(re.findall(r'\d+', entry)[-1])  # Find all numbers and take the last one
+                    # sent += int(re.findall(r'\d+', entry)[-1])  # Find all numbers and take the last one
+                    sent += int(entry.split(":")[-1])
+                  if "bytes_retrans" in entry:
+                    pass
                   elif "retrans" in entry:
-                      retm += int(re.findall(r'\d+', entry)[-1])  # Find all numbers and take the last one
-
+                      # retm += int(re.findall(r'\d+', entry)[-1])  # Find all numbers and take the last one
+                    retm += int(entry.split("/")[-1])
     except Exception as e:
         print(e)
     end = time.time()
@@ -29,7 +35,6 @@ if __name__ == "__main__":
   if len(sys.argv) != 4:
     print("Usage: python client.py <REMOTE_IP> <SERVER_IP> <SERVER_PORT>")
     sys.exit(1)
-
   REMOTE_IP = sys.argv[1]
   SERVER_IP = sys.argv[2]
   SERVER_PORT = int(sys.argv[3])

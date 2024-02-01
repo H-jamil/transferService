@@ -6,7 +6,7 @@
 cd transferService/final_code_transferService/
 
 echo "Installing Python dependencies..."
-pip install -r requirements.txt
+pip install -r ../requirements.txt
 
 
 # Task 1: Mount tmpfs
