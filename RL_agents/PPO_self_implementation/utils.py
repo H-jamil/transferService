@@ -507,7 +507,7 @@ class transferClass_real(gym.Env):
   def close(self):
     return self.transfer_service.cleanup() # close transfer_service
 
-def get_env(env_string='transferService', optimizer='simulator_trained', REMOTE_IP = "129.114.109.104", REMOTE_PORT = "80", INTERVAL = 1,INTERFACE = "eno1",SERVER_IP = '127.0.0.1',SERVER_PORT = 8080):
+def get_env(env_string='transferService', optimizer='simulator_trained', REMOTE_IP = "192.5.86.213", REMOTE_PORT = "80", INTERVAL = 1,INTERFACE = "eno1",SERVER_IP = '127.0.0.1',SERVER_PORT = 8080):
     for handler in log.root.handlers[:]:
       log.root.removeHandler(handler)
     log_FORMAT = '%(created)f -- %(levelname)s: %(message)s'

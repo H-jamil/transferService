@@ -85,31 +85,31 @@ def main (optim):
     print("static actions: ", optimal_actions)
 
 if __name__ == '__main__':
-  start_signal = multiprocessing.Value('i', False)
-  response_signal = multiprocessing.Value('i', False)
-  finish_signal = multiprocessing.Value('i', False)
-  server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-  server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-  server_socket.bind(('10.140.82.45', 12345))
-  server_socket.listen(1)
-  process = multiprocessing.Process(target=handle_client, args=(server_socket, start_signal, response_signal,finish_signal))
-  process.start()
-  optimizers = ['PPO','GD','BO','STATIC']
-  # optimizers = ['BO']
-  for i in range(0,29):
+  # start_signal = multiprocessing.Value('i', False)
+  # response_signal = multiprocessing.Value('i', False)
+  # finish_signal = multiprocessing.Value('i', False)
+  # server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+  # server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+  # server_socket.bind(('10.52.0.239', 12345))
+  # server_socket.listen(1)
+  # process = multiprocessing.Process(target=handle_client, args=(server_socket, start_signal, response_signal,finish_signal))
+  # process.start()
+  # # optimizers = ['PPO','GD','BO','STATIC']
+  optimizers = ['GD']
+  for i in range(0,1):
     for optimizer in optimizers:
       print(f"Iteration: {i}, {optimizer} running")
-      print("Server is running and sending signal to the client to start iperf3")
-      start_signal.value = True
+      # print("Server is running and sending signal to the client to start iperf3")
+      # start_signal.value = True
       print("Waiting for client to complete the task")
       main(optimizer)
-      time.sleep(2)
-      while not response_signal.value:
-          pass
-      print("Client completed the task")
-      response_signal.value = False
+      # time.sleep(2)
+      # while not response_signal.value:
+      #     pass
+      # print("Client completed the task")
+      # response_signal.value = False
 
-  finish_signal.value = True
-  time.sleep(5)
-  process.terminate()
-  process.join()
+  # finish_signal.value = True
+  # time.sleep(5)
+  # process.terminate()
+  # process.join()

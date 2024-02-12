@@ -75,6 +75,7 @@ double get_file_size_from_url(const char *url) {
 
 Queue* get_generator_queue(Queue *files_need_to_be_downloaded, int chunk_size){
     Queue *generator_queue=queue_create();
+    // printf("get_generator_queue: Queue size: %d\n",queue_size(files_need_to_be_downloaded));
     while(queue_size(files_need_to_be_downloaded)>0){
         char *file_url=queue_pop(files_need_to_be_downloaded);
         double size_of_file=get_file_size_from_url(file_url);

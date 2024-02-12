@@ -1,8 +1,10 @@
 #include <stdlib.h>
 #include <pthread.h>
+#include <stdio.h>
 #include "queue.h"
 
 Queue* queue_create() {
+
     Queue* queue = malloc(sizeof(Queue));
     queue->front = NULL;
     queue->rear = NULL;
@@ -10,6 +12,7 @@ Queue* queue_create() {
     pthread_cond_init(&(queue->cond), NULL);
     // queue->size = 0;
     atomic_init(&queue->size, 0); // Initialize size to 0
+    // printf("Queue created\n");
     return queue;
 }
 
