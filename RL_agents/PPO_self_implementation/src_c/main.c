@@ -6,8 +6,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/socket.h>
-// #include "/home/jamilm/libzmq/include/zmq.h"
-#include <zmq.h>
+// #include <zmq.h>
+#include "/home/jamilm/libzmq/include/zmq.h"
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include "hash_table.h"
@@ -27,17 +27,13 @@ HashTable *dataGenTable = NULL;
 
 
 #define CHUNK_SIZE 40000000
-// #define CHUNK_SIZE 200000
 #define MAX_FILE_NUMBER 32
-// #define MAX_FILE_NUMBER 8
 #define PORT 8080
 #define PORT_M 8081
 
 atomic_int downloaded_chunks;
 atomic_int current_energy;
-// atomic_int throughput = 0.0;
 
-// atomic_double total_energy_used_a = 0.0;
 
 typedef struct monitor_args {
     atomic_int *downloaded_chunks;
@@ -49,61 +45,12 @@ typedef struct monitor_args {
     int socket_fd;
 } monitor_args;
 
-// void* monitor_thread(void* arg) {
-//     monitor_args *args = (monitor_args*) arg;
-//     unsigned long long old_bytes_downloaded = 0;
-//     unsigned long long new_bytes_downloaded = 0;
-//     int current_downloaded_chunks=0;
-//     // Socket creation and binding
-//     struct sockaddr_in server_addr;
-//     int server_socket = socket(AF_INET, SOCK_DGRAM, 0);
-//     if (server_socket < 0) {
-//         perror("Failed to create socket");
-//         return NULL;
-//     }
-
-//     memset(&server_addr, 0, sizeof(server_addr));
-//     server_addr.sin_family = AF_INET;
-//     server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-//     server_addr.sin_port = htons(8081);
-
-//     if (bind(server_socket, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
-//         perror("Failed to bind socket");
-//         close(server_socket);
-//         return NULL;
-//     }
-
-//     args->socket_fd = server_socket; // Assign socket to args for use
-//     while (1) {
-//         sleep(1);
-//         current_downloaded_chunks = atomic_load(args->downloaded_chunks);
-//         new_bytes_downloaded = (unsigned long long)current_downloaded_chunks * args->chunk_size;
-//         double throughput = (double)(new_bytes_downloaded - old_bytes_downloaded) * 8 / 1000000000;
-//         global_throughput = throughput;
-//         pthread_mutex_lock(args->logMutex);
-//         fprintf(args->logFile, "Monitor Thread Throughput : %.2f Gbps\n", throughput);
-//         // fprintf(args->logFile, "Monitor Thread Throughput : %d Gbps\n", local_throughput);
-//         pthread_mutex_unlock(args->logMutex);
-
-//         char message[256];
-//         snprintf(message, sizeof(message), "Throughput : %.2f Gbps\n", throughput);
-//         sendto(args->socket_fd, message, strlen(message), 0, (struct sockaddr*)&client_addr, len);
-
-//         if (current_downloaded_chunks == args->total_chunks) {
-//             atomic_store(&args->job_done, 1);
-//             close(args->socket_fd);
-//             break;
-//         }
-//         old_bytes_downloaded = new_bytes_downloaded;
-//     }
-//     return NULL;
-// }
 
 void* monitor_thread(void* arg) {
     monitor_args *args = (monitor_args*) arg;
 
     // Socket creation and binding
-    struct sockaddr_in server_addr, client_addr;
+    struct sockaddr_in  client_addr;
     int len = sizeof(client_addr);
 
     int server_socket = socket(AF_INET, SOCK_DGRAM, 0);
@@ -112,16 +59,7 @@ void* monitor_thread(void* arg) {
         return NULL;
     }
 
-    memset(&server_addr, 0, sizeof(server_addr));
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-    server_addr.sin_port = htons(8081);
 
-    // if (bind(server_socket, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
-    //     perror("Failed to bind socket");
-    //     close(server_socket);
-    //     return NULL;
-    // }
 
     // Initialize the client_addr structure
     client_addr.sin_family = AF_INET;
@@ -142,9 +80,9 @@ void* monitor_thread(void* arg) {
         pthread_mutex_lock(args->logMutex);
         fprintf(args->logFile, "Monitor Thread Throughput : %.2f Gbps\n", throughput);
         pthread_mutex_unlock(args->logMutex);
-
-        char message[256];
-        snprintf(message, sizeof(message), "Throughput : %.2f Gbps\n", throughput);
+        int temp_energy = atomic_load(&current_energy);
+        char message[512];
+        snprintf(message, sizeof(message), "Throughput: %.2f Gbps Energy: %d Parallelism: %d Concurrency: %d\n", throughput, temp_energy, current_parallelism, current_concurrency);
         int send_status = sendto(server_socket, message, strlen(message), 0, (struct sockaddr*)&client_addr, len);
         if (send_status == -1) {
             perror("Failed to send message");
@@ -189,9 +127,6 @@ void* energy_monitor_thread(void* arg) {
         energy_old=energy_now;
 
     }
-    // file = fopen("/sys/class/powercap/intel-rapl:0/energy_uj", "r");
-    // fscanf(file, "%lf", &energy_end);
-    // fclose(file);
     total_energy_used = energy / 1000000.0;  // Convert uJ to J
     return NULL;
 }
@@ -247,7 +182,6 @@ int main(int argc, char *argv[]) {
     char *log_filename = argv[2];  // Fetch the log file name from command line arguments
 
     int user_parallelism, user_concurrency;
-    // char continueInput = 'y';
     atomic_init(&downloaded_chunks, 0); // Initialize size to 0
     pthread_t energy_thread;
     pthread_t threads[MAX_CONCURRENCY];
@@ -279,33 +213,6 @@ int main(int argc, char *argv[]) {
     Queue *generator_queue=get_generator_queue(files_need_to_be_downloaded,CHUNK_SIZE);
     Queue *generator_queue_with_data_chunks=get_generator_queue_with_data_chunks(files_downloaded,CHUNK_SIZE);
 
-    /*
-    //server initialization for python client to get throughput from transferService
-    */
-    // int server_socket;
-    // struct sockaddr_in server_addr;
-
-    // server_socket = socket(AF_INET, SOCK_DGRAM, 0);
-    // if (server_socket < 0) {
-    //     perror("Failed to create socket");
-    //     return 1;
-    // }
-
-    // memset(&server_addr, 0, sizeof(server_addr));
-    // server_addr.sin_family = AF_INET;
-    // server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-    // server_addr.sin_port = htons(PORT_M);
-
-    // if (bind(server_socket, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
-    //     perror("Failed to bind socket");
-    //     return 1;
-    // }
-
-    /*
-    //server initialization for python client to connect
-    */
-
-
     int server_fd, new_socket;
     struct sockaddr_in address;
     int opt = 1;
@@ -322,11 +229,9 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
     address.sin_family = AF_INET;
-    // address.sin_addr.s_addr = INADDR_ANY;
-    // address.sin_addr.s_addr = inet_addr("10.52.1.91");
     address.sin_addr.s_addr = inet_addr("127.0.0.1");
     address.sin_port = htons(PORT);
-
+    printf("Server binding to a port %d\n", PORT);
     if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
         perror("Bind failed");
         exit(EXIT_FAILURE);
@@ -335,6 +240,7 @@ int main(int argc, char *argv[]) {
         perror("Listen failed");
         exit(EXIT_FAILURE);
     }
+    printf("Server listening on port %d\n", PORT);
     if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen)) < 0) {
         perror("Accept failed");
         exit(EXIT_FAILURE);
@@ -349,7 +255,6 @@ int main(int argc, char *argv[]) {
     args.total_chunks = queue_size(generator_queue_with_data_chunks);
     atomic_init(&args.job_done, 0);
     args.chunk_size = CHUNK_SIZE;
-    // args.socket_fd=server_socket;
     pthread_create(&monitor_tid, NULL, monitor_thread, &args);
 
     printf("From Main : Total %d chunks will be downloaded\n", queue_size(generator_queue_with_data_chunks));
@@ -391,18 +296,14 @@ int main(int argc, char *argv[]) {
         }
 
 
-        // Prompt user to enter values
         pthread_mutex_lock(&logMutex);
         fprintf(logFile, "Main Thread changed parallelism to %d and concurrency to %d\n", user_parallelism, user_concurrency);
         pthread_mutex_unlock(&logMutex);
         set_parallel_value(user_parallelism);
         set_concurrent_value(user_concurrency);
         sleep(2*UPDATE_TIME);
-        // int temp_throughput = atomic_load(&throughput);
-        // double main_thread_throughput = (double) temp_throughput;
         char sendBuffer[1024];
         int temp_energy = atomic_load(&current_energy);
-        printf("Energy used: %d Joules\n", temp_energy);
         sprintf(sendBuffer, "Throughput: %.2f, Energy Used: %d", global_throughput, temp_energy);
         send(new_socket, sendBuffer, strlen(sendBuffer), 0);
 
