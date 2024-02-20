@@ -3,6 +3,8 @@ import torch.nn as nn
 import torch
 import numpy as np
 import gym as gym_old
+# import gym
+# from gym import Env
 from gym import spaces
 import numpy as np
 import gymnasium as gym
@@ -339,195 +341,174 @@ def normalize_and_flatten(df, min_values, max_values):
 
     return flattened_array,score_array
 
-class transferClass(gym_old.Env):
-    metadata = {"render_modes": ["human"], "render_fps": 30}
-    def __init__(self,transaction_dfs,initial_dfs,optimizer,total_steps=20,min_values=[0.0, 0.0, -75.0, 0.0, 0.0, 0.0, 1, 1],max_values = [19.52, 2.0, 18.0, 89.9, 110.0, 2.0, 8, 8]):
-        super().__init__()
-        self.action_array= [(1,1),(1,1),(2,2),(3,3),(4,4),(5,5),(6,6),(7,7),(8,8)]
-        self.transaction_dfs = transaction_dfs
-        self.initial_dfs= initial_dfs
-        self.action_space = spaces.Discrete(9) # example action space
-        self.observation_space = spaces.Box(low=0, high=np.inf, shape=(40,), dtype=np.float32) # example observation space
-        self.current_observation = np.zeros(40,) # initialize current observation
-        self.optimizer=optimizer
-        self.old_action=None
-        self.step_number=0
-        self.total_steps=total_steps
-        self.sampling_metric='Score'
-        self.min_values=np.array(min_values)
-        self.max_values=np.array(max_values)
-        self.previous_reward=0
-        self.reward_threshold=0.5
-        self.obs_df=[]
+# class transferClass(gym_old.Env):
+#     metadata = {"render_modes": ["human"], "render_fps": 30}
+#     def __init__(self,transaction_dfs,initial_dfs,optimizer,total_steps=20,min_values=[0.0, 0.0, -75.0, 0.0, 0.0, 0.0, 1, 1],max_values = [19.52, 2.0, 18.0, 89.9, 110.0, 2.0, 8, 8]):
+#         super().__init__()
+#         self.action_array= [(1,1),(1,1),(2,2),(3,3),(4,4),(5,5),(6,6),(7,7),(8,8)]
+#         self.transaction_dfs = transaction_dfs
+#         self.initial_dfs= initial_dfs
+#         self.action_space = spaces.Discrete(9) # example action space
+#         self.observation_space = spaces.Box(low=0, high=np.inf, shape=(40,), dtype=np.float32) # example observation space
+#         self.current_observation = np.zeros(40,) # initialize current observation
+#         self.optimizer=optimizer
+#         self.old_action=None
+#         self.step_number=0
+#         self.total_steps=total_steps
+#         self.sampling_metric='Score'
+#         self.min_values=np.array(min_values)
+#         self.max_values=np.array(max_values)
+#         self.previous_reward=0
+#         self.reward_threshold=0.5
+#         self.obs_df=[]
 
 
-    def reset(self):
-        self.current_observation = np.zeros(40,) # initialize current observation
-        self.old_action=None
-        self.step_number=0
-        self.previous_reward=0
-        self.obs_df=[]
-        return self.current_observation
+#     def reset(self):
+#         self.current_observation = np.zeros(40,) # initialize current observation
+#         self.old_action=None
+#         self.step_number=0
+#         self.previous_reward=0
+#         self.obs_df=[]
+#         return self.current_observation
 
-    def step(self, action):
-        # perform action using transfer_service
-        if action==0:
-            action=1
-        if self.old_action==None:
-            done=False
-            key_name=f'concurrency_{action}'
-            observation_df=sample_row_and_neighbors(self.initial_dfs[key_name],self.sampling_metric)
-            self.obs_df.append(observation_df)
-            observation,result_array=normalize_and_flatten(observation_df,self.min_values,self.max_values)
-            # reward=np.max(result_array)
-            # reward=np.min(result_array)
-            reward_=np.mean(result_array)
-            self.old_action=action
-            # if reward_- self.previous_reward >=self.reward_threshold:
-            #     reward=2
-            # elif reward_- self.previous_reward <= -self.reward_threshold:
-            #     reward= -1
-            # else:
-            #     reward=0
-            # reward = reward_ - self.previous_reward
-            reward = round(reward_ - self.previous_reward, 3)
-            self.previous_reward=reward_
+#     def step(self, action):
+#         # perform action using transfer_service
+#         if action==0:
+#             action=1
+#         if self.old_action==None:
+#             done=False
+#             key_name=f'concurrency_{action}'
+#             observation_df=sample_row_and_neighbors(self.initial_dfs[key_name],self.sampling_metric)
+#             self.obs_df.append(observation_df)
+#             observation,result_array=normalize_and_flatten(observation_df,self.min_values,self.max_values)
+#             # reward=np.max(result_array)
+#             # reward=np.min(result_array)
+#             reward_=np.mean(result_array)
+#             self.old_action=action
+#             # if reward_- self.previous_reward >=self.reward_threshold:
+#             #     reward=2
+#             # elif reward_- self.previous_reward <= -self.reward_threshold:
+#             #     reward= -1
+#             # else:
+#             #     reward=0
+#             # reward = reward_ - self.previous_reward
+#             reward = round(reward_ - self.previous_reward, 3)
+#             self.previous_reward=reward_
 
-        elif self.old_action==action:
-            done=False
-            key_name=f'concurrency_{action}'
-            observation_df=sample_row_and_neighbors(self.initial_dfs[key_name],self.sampling_metric)
-            self.obs_df.append(observation_df)
-            observation,result_array=normalize_and_flatten(observation_df,self.min_values,self.max_values)
-            # reward=np.max(result_array)
-            # reward=np.min(result_array)
-            reward_=np.mean(result_array)
-            self.old_action=action
-            # if reward_- self.previous_reward >=self.reward_threshold:
-            #     reward=2
-            # elif reward_- self.previous_reward <= -self.reward_threshold:
-            #     reward= -1
-            # else:
-            #     reward=0
-            # reward = reward_ - self.previous_reward
-            reward = round(reward_ - self.previous_reward, 3)
-            self.previous_reward=reward_
+#         elif self.old_action==action:
+#             done=False
+#             key_name=f'concurrency_{action}'
+#             observation_df=sample_row_and_neighbors(self.initial_dfs[key_name],self.sampling_metric)
+#             self.obs_df.append(observation_df)
+#             observation,result_array=normalize_and_flatten(observation_df,self.min_values,self.max_values)
+#             # reward=np.max(result_array)
+#             # reward=np.min(result_array)
+#             reward_=np.mean(result_array)
+#             self.old_action=action
+#             # if reward_- self.previous_reward >=self.reward_threshold:
+#             #     reward=2
+#             # elif reward_- self.previous_reward <= -self.reward_threshold:
+#             #     reward= -1
+#             # else:
+#             #     reward=0
+#             # reward = reward_ - self.previous_reward
+#             reward = round(reward_ - self.previous_reward, 3)
+#             self.previous_reward=reward_
 
-        else:
-            done=False
-            key_name=f'concurrency_{self.old_action}_{action}'
-            observation_df=sample_row_and_neighbors(self.transaction_dfs[key_name],self.sampling_metric)
-            self.obs_df.append(observation_df)
-            observation,result_array=normalize_and_flatten(observation_df,self.min_values,self.max_values)
-            # reward=np.max(result_array)
-            # reward=np.min(result_array)
-            reward_=np.mean(result_array)
-            self.old_action=action
-            # if reward_- self.previous_reward >=self.reward_threshold:
-            #     reward=2
-            # elif reward_- self.previous_reward <= -self.reward_threshold:
-            #     reward= -1
-            # else:
-            #     reward=0
-            # reward = reward_ - self.previous_reward
-            reward = round(reward_ - self.previous_reward, 3)
-            self.previous_reward=reward_
+#         else:
+#             done=False
+#             key_name=f'concurrency_{self.old_action}_{action}'
+#             observation_df=sample_row_and_neighbors(self.transaction_dfs[key_name],self.sampling_metric)
+#             self.obs_df.append(observation_df)
+#             observation,result_array=normalize_and_flatten(observation_df,self.min_values,self.max_values)
+#             # reward=np.max(result_array)
+#             # reward=np.min(result_array)
+#             reward_=np.mean(result_array)
+#             self.old_action=action
+#             # if reward_- self.previous_reward >=self.reward_threshold:
+#             #     reward=2
+#             # elif reward_- self.previous_reward <= -self.reward_threshold:
+#             #     reward= -1
+#             # else:
+#             #     reward=0
+#             # reward = reward_ - self.previous_reward
+#             reward = round(reward_ - self.previous_reward, 3)
+#             self.previous_reward=reward_
 
-        self.step_number+=1
+#         self.step_number+=1
 
-        if self.step_number>=self.total_steps:
-            done=True
-            # self.reset()
-        observation=observation.astype(np.float32)
-        self.current_observation=observation
-        return self.current_observation, reward, done, {}
+#         if self.step_number>=self.total_steps:
+#             done=True
+#             # self.reset()
+#         observation=observation.astype(np.float32)
+#         self.current_observation=observation
+#         return self.current_observation, reward, done, {}
 
-    def bayes_step(self,action):
-        params = [1 if x<1 else int(np.round(x)) for x in action]
-        # print("Bayes Step: ",params)
-        if params[0] > 8:
-            params[0] = 8
-        obs,score_b,done_b,__=self.step(params[0])
-        # print("Bayes Step Score: ", score_b)
-        if done_b == False:
-            return np.round(score_b * (-1))
-        else:
-            return -1000000
+#     def bayes_step(self,action):
+#         params = [1 if x<1 else int(np.round(x)) for x in action]
+#         # print("Bayes Step: ",params)
+#         if params[0] > 8:
+#             params[0] = 8
+#         obs,score_b,done_b,__=self.step(params[0])
+#         # print("Bayes Step Score: ", score_b)
+#         if done_b == False:
+#             return np.round(score_b * (-1))
+#         else:
+#             return -1000000
 
 
-    def render(self, mode="human"):
-        pass
+#     def render(self, mode="human"):
+#         pass
 
-    def close(self):
-        self.reset()
+#     def close(self):
+#         self.reset()
 
 def custom_sort_key(item):
     # Sort single integers first, then tuples
     return (0, item) if isinstance(item, int) else (1, item)
 
 
-class transferClass_real(gym.Env):
-  metadata = {"render_modes": ["human"], "render_fps": 30}
-  def __init__(self,transferServiceObject,optimizer):
-    super().__init__()
-    self.action_array=[(1,1),(1,1),(2,2),(3,3),(4,4),(5,5),(6,6),(7,7),(8,8)]
-    self.transfer_service = transferServiceObject
-    self.action_space =spaces.Discrete(9) # example action space
-    self.observation_space = spaces.Box(low=0, high=np.inf, shape=(40,), dtype=np.float32) # example observation space
-    self.current_observation = np.zeros(40,) # initialize current observation
-    self.optimizer=optimizer
+# class transferClass_real(gym.Env):
+#   metadata = {"render_modes": ["human"], "render_fps": 30}
+#   def __init__(self,transferServiceObject,optimizer):
+#     super().__init__()
+#     self.action_array=[(1,1),(1,1),(2,2),(3,3),(4,4),(5,5),(6,6),(7,7),(8,8)]
+#     self.transfer_service = transferServiceObject
+#     self.action_space =spaces.Discrete(9) # example action space
+#     self.observation_space = spaces.Box(low=0, high=np.inf, shape=(40,), dtype=np.float32) # example observation space
+#     self.current_observation = np.zeros(40,) # initialize current observation
+#     self.optimizer=optimizer
 
-  def reset(self):
-    self.current_observation = self.transfer_service.reset() # get initial observation
-    # self.current_observation = np.zeros(40,) # initialize current observation
-    return self.current_observation
+#   def reset(self):
+#     self.current_observation = self.transfer_service.reset() # get initial observation
+#     # self.current_observation = np.zeros(40,) # initialize current observation
+#     return self.current_observation
 
-  def step(self, action):
-    new_observation,reward=self.transfer_service.step(self.action_array[action][0],self.action_array[action][1])
-    if reward==1000000:
-      done=True
-    else:
-      done=False
-    new_observation = new_observation.astype(np.float32)
-    self.current_observation=new_observation
-    return self.current_observation, reward, done, {}
+#   def step(self, action):
+#     new_observation,reward=self.transfer_service.step(self.action_array[action][0],self.action_array[action][1])
+#     if reward==1000000:
+#       done=True
+#     else:
+#       done=False
+#     new_observation = new_observation.astype(np.float32)
+#     self.current_observation=new_observation
+#     return self.current_observation, reward, done, {}
 
-  def bayes_step(self,action):
-    params = [1 if x<1 else int(np.round(x)) for x in action]
-    print("Bayes Step: ",params)
-    if params[0] > 8:
-      params[0] = 8
-    obs,score_b,done_b,__=self.step(params[0])
-    print("Bayes Step Score: ", score_b)
-    return np.round(score_b * (-1),3)
+#   def bayes_step(self,action):
+#     params = [1 if x<1 else int(np.round(x)) for x in action]
+#     print("Bayes Step: ",params)
+#     if params[0] > 8:
+#       params[0] = 8
+#     obs,score_b,done_b,__=self.step(params[0])
+#     print("Bayes Step Score: ", score_b)
+#     return np.round(score_b * (-1),3)
 
-  def render(self, mode="human"):
-    pass
+#   def render(self, mode="human"):
+#     pass
 
-  def close(self):
-    return self.transfer_service.cleanup() # close transfer_service
+#   def close(self):
+#     return self.transfer_service.cleanup() # close transfer_service
 
-def get_env(env_string='transferService', optimizer='simulator_trained', REMOTE_IP = "192.5.86.213", REMOTE_PORT = "80", INTERVAL = 1,INTERFACE = "eno1",SERVER_IP = '127.0.0.1',SERVER_PORT = 8080):
-    for handler in log.root.handlers[:]:
-      log.root.removeHandler(handler)
-    log_FORMAT = '%(created)f -- %(levelname)s: %(message)s'
-    extraString="logFile"
-    # Create the directory if it doesn't exist
-    directory = f"./logFileDir/{optimizer}/"
-    os.makedirs(directory, exist_ok=True)
-    log_file = f"logFileDir/{optimizer}/{optimizer}_{extraString}_{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}.log"
-    log.basicConfig(
-        format=log_FORMAT,
-        datefmt='%m/%d/%Y %I:%M:%S %p',
-        level=log.INFO,
-        handlers=[
-            log.FileHandler(log_file),
-            # log.StreamHandler()
-        ]
-    )
-    transfer_service = transferService(REMOTE_IP, REMOTE_PORT, INTERVAL, INTERFACE, SERVER_IP, SERVER_PORT, optimizer, log)
-    env = transferClass_real(transfer_service,optimizer)
-    return env
 
 def energy_monitor():
     current_energy=0
@@ -555,3 +536,150 @@ def read_energy():
     except IOError as e:
         print(f"Failed to open energy_uj file: {e}")
         return 0
+
+
+class transferClassReal_MA_ID(gym_old.Env):
+    metadata = {"render_modes": ["human"], "render_fps": 30}
+    def __init__(self,transferServiceObject,optimizer,min_values=[0.32, 0.0, 1, 1, -268.0, 0.0, 43.0, 0.0],max_values = [17.6, 6.0, 8, 8, 16.0, 103.0, 102.0, 6.6]):
+        super().__init__()
+        self.transfer_service = transferServiceObject
+        self.min_action=1
+        self.max_action=8
+        self.action_i_d_array=[1,4,0,-1,-4]
+        self.action_space = spaces.MultiDiscrete([5, 5])  # example action space
+        self.current_action_parallelism_value=1
+        self.current_action_concurrency_value=1
+        self.observation_space = spaces.Box(low=0, high=np.inf, shape=(40,), dtype=np.float32) # example observation space
+        self.current_observation = np.zeros(40,) # initialize current observation
+        self.optimizer=optimizer
+        self.min_values=np.array(min_values)
+        self.max_values=np.array(max_values)
+        self.previous_reward=0
+
+    def reset(self):
+        self.current_observation = self.transfer_service.reset() # get initial observation
+        # self.current_observation = np.zeros(40,) # initialize current observation
+        return self.current_observation
+
+    def step(self, action):
+        # perform action using transfer_service
+        action_1,action_2=action
+
+        self.current_action_parallelism_value+=self.action_i_d_array[action_1]
+        if self.current_action_parallelism_value<self.min_action:
+            self.current_action_parallelism_value=self.min_action
+        elif self.current_action_parallelism_value>self.max_action:
+            self.current_action_parallelism_value=self.max_action
+
+        self.current_action_concurrency_value+=self.action_i_d_array[action_2]
+        if self.current_action_concurrency_value<self.min_action:
+            self.current_action_concurrency_value=self.min_action
+        elif self.current_action_concurrency_value>self.max_action:
+            self.current_action_concurrency_value=self.max_action
+
+        new_observation,reward_=self.transfer_service.step(self.current_action_parallelism_value,self.current_action_concurrency_value)
+        if reward_==1000000:
+             done=True
+             reward=0
+        else:
+            done=False
+            reward=reward_
+        new_observation = new_observation.astype(np.float32)
+        self.current_observation=new_observation
+        return self.current_observation, reward, done, {}
+
+    def render(self, mode="human"):
+        pass
+
+    def close(self):
+        return self.transfer_service.cleanup() # close transfer_service
+
+
+class transferClassReal_MA_DG(gym_old.Env):
+    metadata = {"render_modes": ["human"], "render_fps": 30}
+    def __init__(self,transferServiceObject,optimizer,min_values=[0.32, 0.0, 1, 1, -268.0, 0.0, 43.0, 0.0],max_values = [17.6, 6.0, 8, 8, 16.0, 103.0, 102.0, 6.6]):
+        super().__init__()
+        self.transfer_service = transferServiceObject
+        self.min_action=1
+        self.max_action=8
+        # self.action_i_d_array=[1,4,0,-1,-4]
+        self.action_space = spaces.MultiDiscrete([9, 9])  # example action space
+        self.current_action_parallelism_value=1
+        self.current_action_concurrency_value=1
+        self.observation_space = spaces.Box(low=0, high=np.inf, shape=(40,), dtype=np.float32) # example observation space
+        self.current_observation = np.zeros(40,) # initialize current observation
+        self.optimizer=optimizer
+        self.min_values=np.array(min_values)
+        self.max_values=np.array(max_values)
+        self.previous_reward=0
+
+    def reset(self):
+        self.current_observation = self.transfer_service.reset() # get initial observation
+        # self.current_observation = np.zeros(40,) # initialize current observation
+        return self.current_observation
+
+    def step(self, action):
+        # perform action using transfer_service
+        action_1,action_2=action
+        new_observation,reward_=self.transfer_service.step(action_1,action_2)
+        if reward_==1000000:
+             done=True
+             reward=0
+        else:
+            done=False
+            reward=reward_
+        new_observation = new_observation.astype(np.float32)
+        self.current_observation=new_observation
+        return self.current_observation, reward, done, {}
+
+    def render(self, mode="human"):
+        pass
+
+    def close(self):
+        return self.transfer_service.cleanup() # close transfer_service
+
+
+
+def get_env(env_string='transferService', optimizer='multiA_Inc_Dec_trained', REMOTE_IP = "192.5.86.213", REMOTE_PORT = "80", INTERVAL = 1,INTERFACE = "eno1",SERVER_IP = '127.0.0.1',SERVER_PORT = 8080):
+    for handler in log.root.handlers[:]:
+      log.root.removeHandler(handler)
+    log_FORMAT = '%(created)f -- %(levelname)s: %(message)s'
+    extraString="logFile"
+    # Create the directory if it doesn't exist
+    directory = f"./logFileDir/{optimizer}/"
+    os.makedirs(directory, exist_ok=True)
+    log_file = f"logFileDir/{optimizer}/{optimizer}_{extraString}_{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}.log"
+    log.basicConfig(
+        format=log_FORMAT,
+        datefmt='%m/%d/%Y %I:%M:%S %p',
+        level=log.INFO,
+        handlers=[
+            log.FileHandler(log_file),
+            # log.StreamHandler()
+        ]
+    )
+    transfer_service = transferService(REMOTE_IP, REMOTE_PORT, INTERVAL, INTERFACE, SERVER_IP, SERVER_PORT, optimizer, log)
+    env = transferClassReal_MA_ID(transfer_service,optimizer)
+    return env
+
+def get_env_DG(env_string='transferService', optimizer='multiA_Inc_Dec_trained', REMOTE_IP = "192.5.86.213", REMOTE_PORT = "80", INTERVAL = 1,INTERFACE = "eno1",SERVER_IP = '127.0.0.1',SERVER_PORT = 8080):
+    for handler in log.root.handlers[:]:
+      log.root.removeHandler(handler)
+    log_FORMAT = '%(created)f -- %(levelname)s: %(message)s'
+    extraString="logFile"
+    # Create the directory if it doesn't exist
+    directory = f"./logFileDir/{optimizer}/"
+    os.makedirs(directory, exist_ok=True)
+    log_file = f"logFileDir/{optimizer}/{optimizer}_{extraString}_{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}.log"
+    log.basicConfig(
+        format=log_FORMAT,
+        datefmt='%m/%d/%Y %I:%M:%S %p',
+        level=log.INFO,
+        handlers=[
+            log.FileHandler(log_file),
+            # log.StreamHandler()
+        ]
+    )
+    transfer_service = transferService(REMOTE_IP, REMOTE_PORT, INTERVAL, INTERFACE, SERVER_IP, SERVER_PORT, optimizer, log)
+    env = transferClassReal_MA_DG(transfer_service,optimizer)
+    return env
