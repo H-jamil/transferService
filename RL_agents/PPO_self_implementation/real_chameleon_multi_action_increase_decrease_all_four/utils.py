@@ -54,7 +54,7 @@ def process_log_file(full_path):
 
 def process_directory(directory_path):
     all_dfs = []  # List to hold all DataFrames from each log file
-    
+
     for dirpath, dirnames, filenames in os.walk(directory_path):
         for filename in filenames:
             # Construct the full path to the file
@@ -108,8 +108,8 @@ def find_transitions_tuple_based(df, col1, col2, old_tuple, target_tuple):
         # If the value is neither start nor target, reset the flag
         elif row[col1] != old_tuple[0] or row[col2] != old_tuple[1]:
             in_transition = False
-    
-    # new_df= pd.concat(lst)  
+
+    # new_df= pd.concat(lst)
     return new_df.reset_index(drop=True)
 
 
@@ -179,7 +179,6 @@ def normalize_and_flatten(df, min_values, max_values):
     score_array = df['Score'].values
     energy_array=df['Energy'].values
     throughput_array=df['Throughput'].values
-#     print(df.describe())
     # Normalize each column
     normalized_df = (df - min_values) / (max_values - min_values)
 
@@ -193,7 +192,7 @@ def get_initial_cluster_dictionary():
     with open('initial_dataframes_multi_action.pickle', 'rb') as handle:
         initial_value_cluster_dictionary = pickle.load(handle)
         return initial_value_cluster_dictionary
-    
+
 def get_cluster_transaction_dictionary():
     with open('dataframes_multi_action.pickle', 'rb') as handle:
         cluster_dictionary = pickle.load(handle)
@@ -204,7 +203,7 @@ def get_initial_cluster_dictionary_retraining():
     with open('initial_dataframes_multi_action_retraining.pickle', 'rb') as handle:
         initial_value_cluster_dictionary = pickle.load(handle)
         return initial_value_cluster_dictionary
-    
+
 def get_cluster_transaction_dictionary_retraining():
     with open('dataframes_multi_action_retraining.pickle', 'rb') as handle:
         cluster_dictionary = pickle.load(handle)
@@ -274,11 +273,10 @@ class transferClass_multi_action_increase_decrease_score_SLA(gym.Env):
 
 
         action_t=(self.current_action_parallelism_value,self.current_action_concurrency_value)
-#         print(f"action_t {action_t}")
 
         if self.old_action==None:
             done=False
-            try: 
+            try:
                 work_df=self.initial_dfs[action_t]
                 if work_df.empty:
                     observation_df=sample_row_and_neighbors(self.backup_initial_dfs[action_t],self.sampling_metric)
@@ -296,7 +294,7 @@ class transferClass_multi_action_increase_decrease_score_SLA(gym.Env):
 
         elif self.old_action==action_t:
             done=False
-            try: 
+            try:
                 work_df=self.initial_dfs[action_t]
                 if work_df.empty:
                     observation_df=sample_row_and_neighbors(self.backup_initial_dfs[action_t],self.sampling_metric)
@@ -377,7 +375,7 @@ class transferClass_multi_action_increase_decrease_energy_SLA(gym.Env):
         self.transaction_dfs = transaction_dfs
         self.initial_dfs= initial_dfs
         self.backup_initial_dfs=backup_initial_dfs
-        
+
         self.action_space = spaces.MultiDiscrete([5, 5])  # example action space
         self.current_action_parallelism_value=1
         self.current_action_concurrency_value=1
@@ -429,7 +427,7 @@ class transferClass_multi_action_increase_decrease_energy_SLA(gym.Env):
 
         if self.old_action==None:
             done=False
-            try: 
+            try:
                 work_df=self.initial_dfs[action_t]
                 if work_df.empty:
                     observation_df=sample_row_and_neighbors(self.backup_initial_dfs[action_t],self.sampling_metric)
@@ -444,15 +442,15 @@ class transferClass_multi_action_increase_decrease_energy_SLA(gym.Env):
             if energy_part_reward > self.energy_sla:
                 energy_penalty=energy_part_reward-self.energy_sla
             else:
-                energy_penalty=0                
-            reward_=np.mean(t_array)-energy_penalty 
+                energy_penalty=0
+            reward_=np.mean(t_array)-energy_penalty
             self.old_action=action_t
             reward=reward_- self.previous_reward
             self.previous_reward=reward_
 
         elif self.old_action==action_t:
             done=False
-            try: 
+            try:
                 work_df=self.initial_dfs[action_t]
                 if work_df.empty:
                     observation_df=sample_row_and_neighbors(self.backup_initial_dfs[action_t],self.sampling_metric)
@@ -467,8 +465,8 @@ class transferClass_multi_action_increase_decrease_energy_SLA(gym.Env):
             if energy_part_reward > self.energy_sla:
                 energy_penalty=energy_part_reward-self.energy_sla
             else:
-                energy_penalty=0                
-            reward_=np.mean(t_array)-energy_penalty 
+                energy_penalty=0
+            reward_=np.mean(t_array)-energy_penalty
             self.old_action=action_t
             reward=reward_-self.previous_reward
             self.previous_reward=reward_
@@ -490,16 +488,16 @@ class transferClass_multi_action_increase_decrease_energy_SLA(gym.Env):
                 else:
                     observation_df=sample_row_and_neighbors(self.transaction_dfs[key_name],self.sampling_metric)
             except:
-                observation_df=sample_row_and_neighbors(self.backup_initial_dfs[action_t],self.sampling_metric)            
+                observation_df=sample_row_and_neighbors(self.backup_initial_dfs[action_t],self.sampling_metric)
             self.obs_df.append(observation_df)
             observation,result_array,e_array,t_array=normalize_and_flatten(observation_df,self.min_values,self.max_values)
             self.current_download_size+=np.sum(t_array)
-            energy_part_reward=np.mean(e_array)            
+            energy_part_reward=np.mean(e_array)
             if energy_part_reward > self.energy_sla:
                 energy_penalty=energy_part_reward-self.energy_sla
             else:
                 energy_penalty=0
-            reward_=np.mean(t_array)-energy_penalty 
+            reward_=np.mean(t_array)-energy_penalty
             self.old_action=action_t
             reward=reward_-self.previous_reward
             self.previous_reward=reward_
@@ -532,7 +530,7 @@ class transferClass_multi_action_increase_decrease_energy_SLA(gym.Env):
     def close(self):
         self.reset()
 
-        
+
 class transferClass_multi_action_increase_decrease_throughput_SLA(gym.Env):
     metadata = {"render_modes": ["human"], "render_fps": 30}
     def __init__(self,transaction_dfs,initial_dfs,backup_initial_dfs,optimizer,total_steps=20,min_values=[0.00, 0.0, 1, 1, -3081.0, 0.0, 0.0, 0.0],max_values = [19.2, 2.0, 8, 8, 16.0, 70.1, 120.0, 74.166],total_file_size=256,throughput_sla=8):
@@ -544,7 +542,7 @@ class transferClass_multi_action_increase_decrease_throughput_SLA(gym.Env):
         self.transaction_dfs = transaction_dfs
         self.initial_dfs= initial_dfs
         self.backup_initial_dfs=backup_initial_dfs
-        
+
         self.action_space = spaces.MultiDiscrete([5, 5])  # example action space
         self.current_action_parallelism_value=1
         self.current_action_concurrency_value=1
@@ -592,11 +590,10 @@ class transferClass_multi_action_increase_decrease_throughput_SLA(gym.Env):
 
 
         action_t=(self.current_action_parallelism_value,self.current_action_concurrency_value)
-#         print(f"action_t {action_t}")
 
         if self.old_action==None:
             done=False
-            try: 
+            try:
                 work_df=self.initial_dfs[action_t]
                 if work_df.empty:
                     observation_df=sample_row_and_neighbors(self.backup_initial_dfs[action_t],self.sampling_metric)
@@ -611,7 +608,7 @@ class transferClass_multi_action_increase_decrease_throughput_SLA(gym.Env):
             if throughput_part_reward < self.throughput_sla:
                 throughput_penalty=(self.throughput_sla-throughput_part_reward)*5
             else:
-                throughput_penalty=0                
+                throughput_penalty=0
             reward_=throughput_part_reward-throughput_penalty
             self.old_action=action_t
             reward=reward_- self.previous_reward
@@ -619,7 +616,7 @@ class transferClass_multi_action_increase_decrease_throughput_SLA(gym.Env):
 
         elif self.old_action==action_t:
             done=False
-            try: 
+            try:
                 work_df=self.initial_dfs[action_t]
                 if work_df.empty:
                     observation_df=sample_row_and_neighbors(self.backup_initial_dfs[action_t],self.sampling_metric)
@@ -635,12 +632,12 @@ class transferClass_multi_action_increase_decrease_throughput_SLA(gym.Env):
             if throughput_part_reward < self.throughput_sla:
                 throughput_penalty=(self.throughput_sla-throughput_part_reward)*5
             else:
-                throughput_penalty=0                
+                throughput_penalty=0
             reward_=throughput_part_reward-throughput_penalty
             self.old_action=action_t
             reward=reward_- self.previous_reward
             self.previous_reward=reward_
-            
+
         else:
             done=False
             key_name=(self.old_action, action_t)
@@ -666,7 +663,7 @@ class transferClass_multi_action_increase_decrease_throughput_SLA(gym.Env):
             if throughput_part_reward < self.throughput_sla:
                 throughput_penalty=(self.throughput_sla-throughput_part_reward)*5
             else:
-                throughput_penalty=0                
+                throughput_penalty=0
             reward_=throughput_part_reward-throughput_penalty
             self.old_action=action_t
             reward=reward_- self.previous_reward
@@ -698,8 +695,8 @@ class transferClass_multi_action_increase_decrease_throughput_SLA(gym.Env):
 
     def close(self):
         self.reset()
-        
-        
+
+
 class transferClass_multi_action_increase_decrease_energyEfficiency_SLA(gym.Env):
     metadata = {"render_modes": ["human"], "render_fps": 30}
     def __init__(self,transaction_dfs,initial_dfs,backup_initial_dfs,optimizer,total_steps=20,min_values=[0.00, 0.0, 1, 1, -3081.0, 0.0, 0.0, 0.0],max_values = [19.2, 2.0, 8, 8, 16.0, 70.1, 120.0, 74.166],total_file_size=256):
@@ -711,7 +708,7 @@ class transferClass_multi_action_increase_decrease_energyEfficiency_SLA(gym.Env)
         self.transaction_dfs = transaction_dfs
         self.initial_dfs= initial_dfs
         self.backup_initial_dfs=backup_initial_dfs
-        
+
         self.action_space = spaces.MultiDiscrete([5, 5])  # example action space
         self.current_action_parallelism_value=1
         self.current_action_concurrency_value=1
@@ -761,7 +758,7 @@ class transferClass_multi_action_increase_decrease_energyEfficiency_SLA(gym.Env)
 
         if self.old_action==None:
             done=False
-            try: 
+            try:
                 work_df=self.initial_dfs[action_t]
                 if work_df.empty:
                     observation_df=sample_row_and_neighbors(self.backup_initial_dfs[action_t],self.sampling_metric)
@@ -772,16 +769,16 @@ class transferClass_multi_action_increase_decrease_energyEfficiency_SLA(gym.Env)
             self.obs_df.append(observation_df)
             observation,result_array,e_array,t_array=normalize_and_flatten(observation_df,self.min_values,self.max_values)
             self.current_download_size+=np.sum(t_array)
-            energy_part_reward=np.mean(e_array)
+            energy_part_reward=np.max(e_array)
             throughput_part_reward=np.mean(t_array)
-            reward_=(throughput_part_reward*20)/energy_part_reward
+            reward_=(throughput_part_reward*10)/energy_part_reward
             self.old_action=action_t
             reward=reward_-self.previous_reward
             self.previous_reward=reward_
 
         elif self.old_action==action_t:
             done=False
-            try: 
+            try:
                 work_df=self.initial_dfs[action_t]
                 if work_df.empty:
                     observation_df=sample_row_and_neighbors(self.backup_initial_dfs[action_t],self.sampling_metric)
@@ -792,13 +789,13 @@ class transferClass_multi_action_increase_decrease_energyEfficiency_SLA(gym.Env)
             self.obs_df.append(observation_df)
             observation,result_array,e_array,t_array=normalize_and_flatten(observation_df,self.min_values,self.max_values)
             self.current_download_size+=np.sum(t_array)
-            energy_part_reward=np.mean(e_array)
+            energy_part_reward=np.max(e_array)
             throughput_part_reward=np.mean(t_array)
-            reward_=(throughput_part_reward*20)/energy_part_reward
+            reward_=(throughput_part_reward*10)/energy_part_reward
             self.old_action=action_t
             reward=reward_-self.previous_reward
             self.previous_reward=reward_
-            
+
         else:
             done=False
             key_name=(self.old_action, action_t)
