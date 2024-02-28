@@ -402,7 +402,7 @@ class transferService:
 
 class transferClassReal_MA_ID(gym.Env):
     metadata = {"render_modes": ["human"], "render_fps": 30}
-    def __init__(self,transferServiceObject,optimizer,min_values=[0.32, 0.0, 1, 1, -3081.0, 0.0, 44.0, 0.0],max_values = [19.2, 2.0, 8, 8, 16.0, 70.1, 120.0, 74.166]):
+    def __init__(self,transferServiceObject,optimizer,min_values=[0.00, 0.0, 1, 1, -3081.0, 0.0, 0.0, 0.0],max_values = [19.2, 2.0, 8, 8, 16.0, 70.1, 120.0, 74.166]):
         super().__init__()
         self.transfer_service = transferServiceObject
         self.min_action=1
@@ -493,7 +493,7 @@ def np_array_to_df_with_reordered_columns(arr, num_rows=5, num_cols=8, col_names
     df = pd.DataFrame(reshaped_array, columns=col_names)
 
     # Reorder the columns
-    reordered_col_names = ['Throughput', 'receiver_lr', 'Score', 'RTT', 'Energy', 'sender_lr', 'concurrency', 'parallelism']
+    reordered_col_names = ['Throughput', 'receiver_lr', 'concurrency', 'parallelism','Score', 'RTT', 'Energy', 'sender_lr']
     df = df[reordered_col_names]
 
     return df
@@ -513,7 +513,7 @@ def normalize_and_flatten_real(df, min_values, max_values):
 
 
 class NormalizeObservationAndRewardWrapper(gym.Wrapper):
-    def __init__(self, env, sla_type='score',min_values=[0.00, 0.0, -3081.0, 0.0, 0.0, 0.0, 1, 1],max_values = [19.2, 2.0, 16.0, 70.1, 120.0, 74.116, 8, 8], reward_scale=1.0):
+    def __init__(self, env, sla_type='score',min_values=[0.00, 0.0, 1, 1, -3081.0, 0.0, 0.0, 0.0],max_values = [19.2, 2.0, 8, 8, 16.0, 70.1, 120.0, 74.166], reward_scale=1.0):
         super().__init__(env)
         self.min_values=np.array(min_values)
         self.max_values=np.array(max_values)

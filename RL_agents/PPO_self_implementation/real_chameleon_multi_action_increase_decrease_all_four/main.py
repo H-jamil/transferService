@@ -27,7 +27,7 @@ def main(optimer):
     print("Real Transfer with score sla")
     env_ = get_env(optimizer='ppo_score_sla_MA_ID')
     env=NormalizeObservationAndRewardWrapper(env_,sla_type='score')
-    model = PPO.load("/home/cc/transferService/RL_agents/PPO_self_implementation/simulator_design_multi_action_increase_decrease_all_four_final/ppo_transferClass_multi_action_increase_decrease_score_SLA/ppo_best_model/best_model.zip")
+    model = PPO.load("./ppo_transferClass_multi_action_increase_decrease_score_SLA/ppo_best_model/best_model.zip")
     action_list=[]
     reward_list=[]
     episode_reward = 0
@@ -48,7 +48,7 @@ def main(optimer):
     print("Real Transfer with energy sla")
     env_ = get_env(optimizer='ppo_energy_sla_MA_ID')
     env=NormalizeObservationAndRewardWrapper(env_,sla_type='energy')
-    model = PPO.load("/home/cc/transferService/RL_agents/PPO_self_implementation/simulator_design_multi_action_increase_decrease_all_four_final/ppo_transferClass_multi_action_increase_decrease_energy_SLA/ppo_best_model/best_model.zip")
+    model = PPO.load("./ppo_transferClass_multi_action_increase_decrease_energy_SLA/ppo_best_model/best_model.zip")
     action_list=[]
     reward_list=[]
     episode_reward = 0
@@ -69,7 +69,7 @@ def main(optimer):
     print("Real Transfer with throughput sla")
     env_ = get_env(optimizer='ppo_throughput_sla_MA_ID')
     env=NormalizeObservationAndRewardWrapper(env_,sla_type='throughput')
-    model = PPO.load("/home/cc/transferService/RL_agents/PPO_self_implementation/simulator_design_multi_action_increase_decrease_all_four_final/ppo_transferClass_multi_action_increase_decrease_throughput_SLA/ppo_best_model/best_model.zip")
+    model = PPO.load("./ppo_transferClass_multi_action_increase_decrease_throughput_SLA/ppo_best_model/best_model.zip")
     action_list=[]
     reward_list=[]
     episode_reward = 0
@@ -90,7 +90,7 @@ def main(optimer):
     print("Real Transfer with energyEfficiency sla")
     env_ = get_env(optimizer='ppo_energyEfficiency_sla_MA_ID')
     env=NormalizeObservationAndRewardWrapper(env_,sla_type='energyEfficiency')
-    model = PPO.load("/home/cc/transferService/RL_agents/PPO_self_implementation/simulator_design_multi_action_increase_decrease_all_four_final/ppo_transferClass_multi_action_increase_decrease_energyEfficiency_SLA/ppo_best_model/best_model.zip")
+    model = PPO.load("./ppo_transferClass_multi_action_increase_decrease_energyEfficiency_SLA/ppo_best_model/best_model.zip")
     action_list=[]
     reward_list=[]
     episode_reward = 0
@@ -110,8 +110,9 @@ def main(optimer):
 
 
 if __name__ == "__main__":
-  total_run_number=20
+  total_run_number=30
   optimizer_list=['ppo_score_sla','ppo_energy_sla','ppo_throughput_sla','ppo_energyEfficiency_sla']
+  # optimizer_list=['ppo_score_sla']
   for run in range(0,total_run_number):
     for optimizer in optimizer_list:
       print(f"Run: {run}, Optimizer: {optimizer}")
