@@ -21,6 +21,8 @@ from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
 import gym
 from gym import spaces
 import numpy as np
+from collections import OrderedDict
+
 
 def process_log_file(full_path):
     if os.stat(full_path).st_size == 0:
@@ -850,3 +852,199 @@ class transferClass_multi_action_increase_decrease_energyEfficiency_SLA(gym.Env)
 
     def close(self):
         self.reset()
+
+
+class transferClass_multi_action_gd(gym.Env):
+    metadata = {"render_modes": ["human"], "render_fps": 30}
+    def __init__(self,transaction_dfs,initial_dfs,backup_initial_dfs,optimizer,total_steps=20,min_values=[0.00, 0.0, 1, 1, -3081.0, 0.0, 0.0, 0.0],max_values = [19.2, 2.0, 8, 8, 16.0, 70.1, 120.0, 74.166],total_file_size=256):
+        super().__init__()
+        self.min_action=1
+        self.max_action=8
+        self.action_space = spaces.MultiDiscrete([8, 8])
+        self.transaction_dfs = transaction_dfs
+        self.initial_dfs= initial_dfs
+        self.backup_initial_dfs=backup_initial_dfs
+        self.current_action_parallelism_value=1
+        self.current_action_concurrency_value=1
+        self.observation_space = spaces.Box(low=0, high=np.inf, shape=(40,), dtype=np.float32) # example observation space
+        self.current_observation = np.zeros(40,) # initialize current observation
+
+        self.optimizer=optimizer
+        self.old_action=None
+        self.step_number=0
+        self.total_steps=total_steps
+        self.sampling_metric='Score'
+        self.min_values=np.array(min_values)
+        self.max_values=np.array(max_values)
+        self.previous_reward=0
+        self.obs_df=[]
+        self.total_file_size= total_file_size
+        self.current_download_size=0
+
+    def reset(self):
+        self.current_observation = np.zeros(40,) # initialize current observation
+        self.old_action=None
+        self.step_number=0
+        self.previous_reward=0
+        self.current_action_parallelism_value=1
+        self.current_action_concurrency_value=1
+        self.obs_df=[]
+        self.current_download_size=0
+        return self.current_observation
+
+    def step(self, action):
+        action=np.array(action)+1
+        # perform action using transfer_service
+        action_1,action_2=action
+        action_t=(action_1,action_2)
+
+        if self.old_action==None:
+            done=False
+            try:
+                work_df=self.initial_dfs[action_t]
+                if work_df.empty:
+                    observation_df=sample_row_and_neighbors(self.backup_initial_dfs[action_t],self.sampling_metric)
+                else:
+                    observation_df=sample_row_and_neighbors(self.initial_dfs[action_t],self.sampling_metric)
+            except:
+                observation_df=sample_row_and_neighbors(self.backup_initial_dfs[action_t],self.sampling_metric)
+            self.obs_df.append(observation_df)
+            observation,result_array,e_array,t_array=normalize_and_flatten(observation_df,self.min_values,self.max_values)
+            self.current_download_size+=np.sum(t_array)
+            reward=np.sum(result_array)
+            self.old_action=action_t
+            self.previous_reward=reward
+
+        elif self.old_action==action_t:
+            done=False
+            try:
+                work_df=self.initial_dfs[action_t]
+                if work_df.empty:
+                    observation_df=sample_row_and_neighbors(self.backup_initial_dfs[action_t],self.sampling_metric)
+                else:
+                    observation_df=sample_row_and_neighbors(self.initial_dfs[action_t],self.sampling_metric)
+            except:
+                observation_df=sample_row_and_neighbors(self.backup_initial_dfs[action_t],self.sampling_metric)
+            self.obs_df.append(observation_df)
+            observation,result_array,e_array,t_array=normalize_and_flatten(observation_df,self.min_values,self.max_values)
+            self.current_download_size+=np.sum(t_array)
+            reward=np.sum(result_array)
+            self.old_action=action_t
+            self.previous_reward=reward
+
+        else:
+            done=False
+            key_name=(self.old_action, action_t)
+            try:
+                work_df=self.transaction_dfs[key_name]
+                if work_df.empty:
+                    try:
+                        work_df_=self.initial_dfs[action_t]
+                        if work_df_.empty:
+                            observation_df=sample_row_and_neighbors(self.backup_initial_dfs[action_t],self.sampling_metric)
+                        else:
+                            observation_df=sample_row_and_neighbors(self.initial_dfs[action_t],self.sampling_metric)
+                    except:
+                        observation_df=sample_row_and_neighbors(self.backup_initial_dfs[action_t],self.sampling_metric)
+                else:
+                    observation_df=sample_row_and_neighbors(self.transaction_dfs[key_name],self.sampling_metric)
+            except:
+                observation_df=sample_row_and_neighbors(self.backup_initial_dfs[action_t],self.sampling_metric)
+            self.obs_df.append(observation_df)
+            observation,result_array,e_array,t_array=normalize_and_flatten(observation_df,self.min_values,self.max_values)
+            self.current_download_size+=np.sum(t_array)
+            reward=np.sum(result_array)
+            self.old_action=action_t
+            self.previous_reward=reward
+
+        self.step_number+=1
+
+        if self.current_download_size>=self.total_file_size:
+            done=True
+        observation = np.asarray(observation).astype(np.float32)
+        self.current_observation=observation
+        return self.current_observation, reward, done, {}
+
+    def render(self, mode="human"):
+        pass
+
+    def close(self):
+        self.reset()
+
+
+def gradient_multivariate(max_io_cc, max_net_cc,env):
+    count = 0
+    cache_net = OrderedDict()
+    cache_io = OrderedDict()
+    io_opt = True
+    values = []
+    ccs = [[1,1]]
+    cc_change_limit=5
+
+    while True:
+        count += 1
+        soft_limit_net = max_net_cc
+        soft_limit_io = max_io_cc
+        observation, reward, done, info = env.step(np.array(ccs[-1]))
+        values.append(reward)
+        cache_net[abs(values[-1])] = ccs[-1][0]
+        cache_io[abs(values[-1])] = ccs[-1][1]
+        if count % 5 == 0:
+            soft_limit_net = min(cache_net[max(cache_net.keys())], max_net_cc)
+            soft_limit_io = min(cache_io[max(cache_io.keys())], max_io_cc)
+
+        if len(cache_net)>20 or len(cache_io)>20:
+            cache_net.popitem(last=True)
+            cache_io.popitem(last=True)
+
+        if done == True:
+            print("GD Optimizer Exits ...")
+            break
+        if len(ccs) == 1:
+            ccs.append([2,2])
+        else:
+            # Network
+            difference = ccs[-1][0] - ccs[-2][0]
+            prev, curr = values[-2], values[-1]
+            if difference != 0 and prev !=0:
+                gradient = (curr - prev)/(difference*prev)
+            else:
+                gradient = (curr - prev)/prev if prev != 0 else 1
+
+            update_cc_net = ccs[-1][0] * gradient
+            print(f"Gradient {gradient} at step {count}")
+            if update_cc_net>0:
+                update_cc_net = min(max(1, int(np.round(update_cc_net))), cc_change_limit)
+            else:
+                update_cc_net = max(min(-1, int(np.round(update_cc_net))), -cc_change_limit)
+
+            next_cc_net = min(max(ccs[-1][0] + update_cc_net, 1), soft_limit_net)
+
+            # I/O
+            next_cc_io = max(1, ccs[-1][1] // 2)
+            if io_opt:
+                difference = ccs[-1][1] - ccs[-2][1]
+                prev, curr = values[-2], values[-1]
+                print((prev, curr))
+                if curr != 0:
+                    if difference != 0 and prev !=0:
+                        gradient = (curr - prev)/(difference*prev)
+                    else:
+                        gradient = (curr - prev)/prev if prev !=0 else 1
+
+                    update_cc_io = ccs[-1][1] * gradient
+                    if update_cc_io>0:
+                        update_cc_io = min(max(1, int(np.round(update_cc_io))), cc_change_limit)
+                    else:
+                        update_cc_io = max(min(-1, int(np.round(update_cc_io))), -cc_change_limit)
+
+                    next_cc_io = min(max(ccs[-1][1] + update_cc_io, 1), soft_limit_io)
+                    print((update_cc_io, next_cc_io, soft_limit_io))
+            else:
+                next_cc_io = 0
+
+            ccs.append([next_cc_net, next_cc_io])
+            print(f"Gradient: {gradient}")
+            print(f"Previous CC: {ccs[-2]}, Choosen CC: {ccs[-1]}")
+
+    return ccs, values

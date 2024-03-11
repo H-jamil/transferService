@@ -27,6 +27,7 @@ from multiprocessing import Value, Manager, Process
 import psutil
 import socket
 import logging as log
+from collections import OrderedDict
 
 def energy_monitor():
     current_energy=0
@@ -347,12 +348,12 @@ class transferService:
         last_ten = copy.deepcopy(self.throughput_logs[-10:])  # Get the last 10 elements for total_score
         last_five = last_ten[-5:]  # Get the last 5 elements from the last_ten list for concatenated_values
         concatenated_values = []
-        # score_list = []
-        total_score = 0
-        # # Calculate total score from last 10 elements
-        # for entry in last_ten:
-        #     score_list.append(entry[4])  #  index 4 is for score
-        # total_score = np.sum(score_list)
+        score_list = []
+        # total_score = 0
+        # Calculate total score from last 10 elements
+        for entry in last_ten:
+            score_list.append(entry[4])  #  index 4 is for score
+        total_score = np.sum(score_list)
         for entry in last_five:
             concatenated_values.extend(entry[:-1])  # Exclude the last value (time)
         # Create a numpy array from the concatenated values
@@ -580,3 +581,159 @@ class NormalizeObservationAndRewardWrapper(gym.Wrapper):
         self.env.close()
 
 
+class transferClassReal_GD(gym.Env):
+    metadata = {"render_modes": ["human"], "render_fps": 30}
+    def __init__(self,transferServiceObject,optimizer,min_values=[0.00, 0.0, 1, 1, -3081.0, 0.0, 0.0, 0.0],max_values = [19.2, 2.0, 8, 8, 16.0, 70.1, 120.0, 74.166]):
+        super().__init__()
+        self.transfer_service = transferServiceObject
+        self.min_action=1
+        self.max_action=8
+        self.action_space = spaces.MultiDiscrete([8, 8])  # example action space
+        self.current_action_parallelism_value=1
+        self.current_action_concurrency_value=1
+        self.observation_space = spaces.Box(low=0, high=np.inf, shape=(40,), dtype=np.float32) # example observation space
+        self.current_observation = np.zeros(40,) # initialize current observation
+        self.optimizer=optimizer
+        self.min_values=np.array(min_values)
+        self.max_values=np.array(max_values)
+        self.previous_reward=0
+
+    def reset(self):
+        self.current_observation = self.transfer_service.reset() # get initial observation
+        self.current_action_parallelism_value=1
+        self.current_action_concurrency_value=1
+        return self.current_observation
+
+    def step(self, action):
+        action=np.array(action)+1
+        # perform action using transfer_service
+        action_1,action_2=action
+
+        self.current_action_parallelism_value=action_1
+        if self.current_action_parallelism_value<self.min_action:
+            self.current_action_parallelism_value=self.min_action
+        elif self.current_action_parallelism_value>self.max_action:
+            self.current_action_parallelism_value=self.max_action
+
+        self.current_action_concurrency_value=action_2
+        if self.current_action_concurrency_value<self.min_action:
+            self.current_action_concurrency_value=self.min_action
+        elif self.current_action_concurrency_value>self.max_action:
+            self.current_action_concurrency_value=self.max_action
+
+        new_observation,reward_=self.transfer_service.step(self.current_action_parallelism_value,self.current_action_concurrency_value)
+        if reward_==1000000:
+             done=True
+             reward=0
+        else:
+            done=False
+            reward=reward_
+        new_observation = new_observation.astype(np.float32)
+        self.current_observation=new_observation
+        return self.current_observation, reward, done, {}
+
+    def render(self, mode="human"):
+        pass
+
+    def close(self):
+        return self.transfer_service.cleanup() # close transfer_service
+
+def get_env_gd(env_string='transferService', optimizer='multiA_Inc_Dec_trained', REMOTE_IP = "192.5.86.213", REMOTE_PORT = "80", INTERVAL = 1,INTERFACE = "eno1",SERVER_IP = '127.0.0.1',SERVER_PORT = 8080):
+    for handler in log.root.handlers[:]:
+      log.root.removeHandler(handler)
+    log_FORMAT = '%(created)f -- %(levelname)s: %(message)s'
+    extraString="logFile"
+    # Create the directory if it doesn't exist
+    directory = f"./logFileDir/{optimizer}/"
+    os.makedirs(directory, exist_ok=True)
+    log_file = f"logFileDir/{optimizer}/{optimizer}_{extraString}_{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}.log"
+    log.basicConfig(
+        format=log_FORMAT,
+        datefmt='%m/%d/%Y %I:%M:%S %p',
+        level=log.INFO,
+        handlers=[
+            log.FileHandler(log_file),
+            # log.StreamHandler()
+        ]
+    )
+    transfer_service = transferService(REMOTE_IP, REMOTE_PORT, INTERVAL, INTERFACE, SERVER_IP, SERVER_PORT, optimizer, log)
+    env = transferClassReal_GD(transfer_service,optimizer)
+    return env
+
+
+def gradient_multivariate(max_io_cc, max_net_cc,env):
+    count = 0
+    cache_net = OrderedDict()
+    cache_io = OrderedDict()
+    io_opt = True
+    values = []
+    ccs = [[1,1]]
+    cc_change_limit=5
+    env.reset()
+    while True:
+        count += 1
+        soft_limit_net = max_net_cc
+        soft_limit_io = max_io_cc
+        observation, reward, done, info = env.step(np.array(ccs[-1]))
+        values.append(reward)
+        cache_net[abs(values[-1])] = ccs[-1][0]
+        cache_io[abs(values[-1])] = ccs[-1][1]
+        if count % 5 == 0:
+            soft_limit_net = min(cache_net[max(cache_net.keys())], max_net_cc)
+            soft_limit_io = min(cache_io[max(cache_io.keys())], max_io_cc)
+
+        if len(cache_net)>20 or len(cache_io)>20:
+            cache_net.popitem(last=True)
+            cache_io.popitem(last=True)
+
+        if done == True:
+            print("GD Optimizer Exits ...")
+            break
+        if len(ccs) == 1:
+            ccs.append([2,2])
+        else:
+            # Network
+            difference = ccs[-1][0] - ccs[-2][0]
+            prev, curr = values[-2], values[-1]
+            if difference != 0 and prev !=0:
+                gradient = (curr - prev)/(difference*prev)
+            else:
+                gradient = (curr - prev)/prev if prev != 0 else 1
+
+            update_cc_net = ccs[-1][0] * gradient
+            # print(f"Gradient {gradient} at step {count}")
+            if update_cc_net>0:
+                update_cc_net = min(max(1, int(np.round(update_cc_net))), cc_change_limit)
+            else:
+                update_cc_net = max(min(-1, int(np.round(update_cc_net))), -cc_change_limit)
+
+            next_cc_net = min(max(ccs[-1][0] + update_cc_net, 1), soft_limit_net)
+
+            # I/O
+            next_cc_io = max(1, ccs[-1][1] // 2)
+            if io_opt:
+                difference = ccs[-1][1] - ccs[-2][1]
+                prev, curr = values[-2], values[-1]
+                print((prev, curr))
+                if curr != 0:
+                    if difference != 0 and prev !=0:
+                        gradient = (curr - prev)/(difference*prev)
+                    else:
+                        gradient = (curr - prev)/prev if prev !=0 else 1
+
+                    update_cc_io = ccs[-1][1] * gradient
+                    if update_cc_io>0:
+                        update_cc_io = min(max(1, int(np.round(update_cc_io))), cc_change_limit)
+                    else:
+                        update_cc_io = max(min(-1, int(np.round(update_cc_io))), -cc_change_limit)
+
+                    next_cc_io = min(max(ccs[-1][1] + update_cc_io, 1), soft_limit_io)
+                    print((update_cc_io, next_cc_io, soft_limit_io))
+            else:
+                next_cc_io = 0
+
+            ccs.append([next_cc_net, next_cc_io])
+            print(f"Gradient: {gradient}")
+            print(f"Previous CC: {ccs[-2]}, Choosen CC: {ccs[-1]}")
+    env.close()
+    return ccs, values

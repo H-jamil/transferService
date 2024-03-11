@@ -107,12 +107,20 @@ def main(optimer):
     print(f"actions {action_list},   {len(action_list)}")
     print(f"rewards {reward_list},  {len(reward_list)}")
 
+  elif optimizer == 'gd':
+    print("Testing the real transfer with GD actions")
+    env = get_env_gd(optimizer='gd_MA_ID')
+    # env.reset()
+    # env=NormalizeObservationAndRewardWrapper(env_,sla_type='score')
+    ccs,values=gradient_multivariate(env.max_action,env.max_action,env)
+    print(f"ccs: {ccs}")
+    print(f"values: {values}")
 
 
 if __name__ == "__main__":
   total_run_number=30
-  optimizer_list=['ppo_score_sla','ppo_energy_sla','ppo_throughput_sla','ppo_energyEfficiency_sla']
-  # optimizer_list=['ppo_score_sla']
+  optimizer_list=['ppo_score_sla','ppo_energy_sla','ppo_throughput_sla','ppo_energyEfficiency_sla','gd']
+  # optimizer_list=['gd']
   for run in range(0,total_run_number):
     for optimizer in optimizer_list:
       print(f"Run: {run}, Optimizer: {optimizer}")
