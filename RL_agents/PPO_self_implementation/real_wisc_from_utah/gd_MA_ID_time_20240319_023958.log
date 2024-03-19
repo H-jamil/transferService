@@ -1,0 +1,9 @@
+Server binding to a port 8080
+Server listening on port 8080
+From Main : Total 800 chunks will be downloaded
+Main Thread change parallelism to MAX and concurrency to MAX
+Main thread is shutting off all concurrent threads
+All done
+Total energy used: 5745.305543 Joules
+mean Network throughput: 5 [msg/s]
+mean Network throughput: 1777.654 [Mb/s]
